@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import com.golike.myapplication.R;
 import com.golike.myapplication.SampleApplication;
 import com.golike.myapplication.components.DaggerMainComponent;
+import com.golike.myapplication.modules.MinePresenterModule;
 import com.golike.myapplication.presenter.MinePresenter;
 import com.golike.myapplication.ui.fragment.DynamicFragment;
 import com.golike.myapplication.ui.fragment.HomeFragment;
@@ -24,12 +25,8 @@ public class MainActivity extends FragmentActivity  {
      MinePresenter presenter;
 
     private MineFragment mineFragment;
-    private DynamicFragment dynamicFragment;
-    private HomeFragment homeFragment;
 
     private final String MINE = "Mine";
-    private final String DYNAMIC = "dynamic";
-    private final String HOME = "home";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +39,8 @@ public class MainActivity extends FragmentActivity  {
 
     private void initFragments() {
         mineFragment = new MineFragment();
-        presenter = new MinePresenter(mineFragment);
-        dynamicFragment = new DynamicFragment();
-        homeFragment = new HomeFragment();
+        DaggerMainComponent.builder().minePresenterModule(new MinePresenterModule(mineFragment)).appComponent(SampleApplication.getInstance().getAppComponent()).build().inject(this);
+
     }
 
     private void showFragments(String tag, boolean init) {
@@ -61,12 +57,6 @@ public class MainActivity extends FragmentActivity  {
     private Fragment getFragmentByTag(String tag) {
         if (MINE.equals(tag)) {
             return mineFragment;
-        }
-        if (DYNAMIC.equals(tag)) {
-            return dynamicFragment;
-        }
-        if (HOME.equals(tag)) {
-            return homeFragment;
         }
         return null;
     }

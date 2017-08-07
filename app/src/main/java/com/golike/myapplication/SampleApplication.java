@@ -20,7 +20,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance=this;
-        appComponent=DaggerAppComponent.builder().appModule(new AppModule(this)).build();
+        appComponent= DaggerAppComponent.builder().appModule(new AppModule(this)).build();
     }
 
     public static SampleApplication  getInstance(){
