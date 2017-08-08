@@ -32,4 +32,15 @@
         android:layout_height="wrap_content"
         android:text="登录" />
 
+
+    <com.golike.customviews.AutoRefreshListView
+        android:id="@id/rc_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:listSelector="@android:color/transparent" />
+
 </LinearLayout>
