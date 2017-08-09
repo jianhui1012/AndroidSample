@@ -36,7 +36,7 @@ public class EmojiTab implements IEmoticonTab {
     }
 
     public Drawable obtainTabDrawable(Context context) {
-        return context.getResources().getDrawable(R.mipmap.rc_tab_emoji);
+        return context.getResources().getDrawable(R.drawable.rc_tab_emoji);
     }
 
     public View obtainTabPager(Context context) {
@@ -86,7 +86,7 @@ public class EmojiTab implements IEmoticonTab {
     private void initIndicator(int pages, LinearLayout indicator) {
         for(int i = 0; i < pages; ++i) {
             ImageView imageView = (ImageView)this.mLayoutInflater.inflate(R.layout.rc_ext_indicator, (ViewGroup)null);
-            imageView.setImageResource(R.mipmap.rc_ext_indicator);
+            imageView.setImageResource(R.drawable.rc_ext_indicator);
             indicator.addView(imageView);
         }
 
@@ -98,12 +98,12 @@ public class EmojiTab implements IEmoticonTab {
             ImageView curView;
             if(pre >= 0) {
                 curView = (ImageView)this.mIndicator.getChildAt(pre);
-                curView.setImageResource(R.mipmap.rc_ext_indicator);
+                curView.setImageResource(R.drawable.rc_ext_indicator);
             }
 
             if(cur >= 0) {
                 curView = (ImageView)this.mIndicator.getChildAt(cur);
-                curView.setImageResource(R.mipmap.rc_ext_indicator_hover);
+                curView.setImageResource(R.drawable.rc_ext_indicator_hover);
             }
         }
 
@@ -150,7 +150,7 @@ public class EmojiTab implements IEmoticonTab {
             if(position != EmojiTab.this.mEmojiCountPerPage && position + this.index != AndroidEmoji.getEmojiSize()) {
                 viewHolder.emojiIV.setImageDrawable(AndroidEmoji.getEmojiDrawable(parent.getContext(), this.index + position));
             } else {
-                viewHolder.emojiIV.setImageResource(R.mipmap.rc_icon_emoji_delete);
+                viewHolder.emojiIV.setImageResource(R.drawable.rc_icon_emoji_delete);
             }
 
             return convertView;

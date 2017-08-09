@@ -5,4 +5,4 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:padding="5dp"
-    android:src="@mipmap/rc_ext_indicator"/>
+    android:src="@drawable/rc_ext_indicator"/>

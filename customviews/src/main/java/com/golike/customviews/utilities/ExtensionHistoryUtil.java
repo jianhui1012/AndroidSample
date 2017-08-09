@@ -3,7 +3,7 @@ package com.golike.customviews.utilities;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.golike.customviews.model.ConversationType;
+import com.golike.customviews.model.Conversation.ConversationType;
 
 import java.util.ArrayList;
 import java.util.List;

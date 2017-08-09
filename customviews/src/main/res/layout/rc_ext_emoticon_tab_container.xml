@@ -38,7 +38,7 @@
                     android:layout_height="36dp"
                     android:scaleType="center"
                     android:visibility="gone"
-                    android:src="@mipmap/rc_ext_tab_add"/>
+                    android:src="@drawable/rc_ext_tab_add"/>
 
                 <HorizontalScrollView
                     android:layout_width="match_parent"

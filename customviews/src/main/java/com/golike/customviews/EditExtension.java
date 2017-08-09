@@ -11,6 +11,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,12 +24,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.golike.customviews.emoticon.AndroidEmoji;
 import com.golike.customviews.emoticon.EmoticonTabAdapter;
+import com.golike.customviews.emoticon.IEmoticonClickListener;
 import com.golike.customviews.emoticon.IEmoticonTab;
-import com.golike.customviews.model.ConversationType;
+import com.golike.customviews.menu.ISubMenuItemClickListener;
+import com.golike.customviews.menu.InputSubMenu;
+import com.golike.customviews.model.Conversation.ConversationType;
+import com.golike.customviews.model.CustomServiceMode;
+import com.golike.customviews.plugin.IPluginClickListener;
 import com.golike.customviews.plugin.IPluginModule;
 import com.golike.customviews.plugin.PluginAdapter;
 import com.golike.customviews.InputBar.Style;
+import com.golike.customviews.utilities.ExtensionHistoryUtil;
+import com.golike.customviews.utilities.ExtensionHistoryUtil.ExtensionBarState;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +48,7 @@ import java.util.List;
  */
 
 public class EditExtension  extends LinearLayout {
-    private static final String TAG = "RongExtension";
+    private static final String TAG = "EditExtension";
     private ImageView mPSMenu;
     private View mPSDivider;
     private List<InputMenu> mInputMenuList;
@@ -92,7 +101,7 @@ public class EditExtension  extends LinearLayout {
     }
 
     public void onDestroy() {
-        //RLog.d("RongExtension", "onDestroy");
+        //RLog.d("EditExtension", "onDestroy");
         Iterator i$ = this.mExtensionModuleList.iterator();
 
         while(i$.hasNext()) {
@@ -188,7 +197,7 @@ public class EditExtension  extends LinearLayout {
             }
 
         } else {
-            //RLog.e("RongExtension", "setInputMenu no item");
+            //RLog.e("EditExtension", "setInputMenu no item");
         }
     }
 
@@ -213,7 +222,8 @@ public class EditExtension  extends LinearLayout {
                 }
             });
 
-            for(final int i = 0; i < inputMenuList.size(); ++i) {
+            for(int i = 0; i < inputMenuList.size(); ++i) {
+                final int j=i;
                 final InputMenu menu = (InputMenu)inputMenuList.get(i);
                 LinearLayout rootMenu = (LinearLayout)inflater.inflate(R.layout.rc_ext_root_menu_item, (ViewGroup)null);
                 LayoutParams lp = new LayoutParams(-1, -1, 1.0F);
@@ -223,30 +233,30 @@ public class EditExtension  extends LinearLayout {
                 ImageView iv = (ImageView)rootMenu.findViewById(R.id.rc_menu_icon);
                 if(menu.subMenuList != null && menu.subMenuList.size() > 0) {
                     iv.setVisibility(VISIBLE);
-                    iv.setImageResource(R.mipmap.rc_menu_trangle);
+                    iv.setImageResource(R.drawable.rc_menu_trangle);
                 }
 
                 rootMenu.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
                         List subMenuList = menu.subMenuList;
                         if(subMenuList != null && subMenuList.size() > 0) {
-                            InputSubMenu subMenu = new InputSubMenu(RongExtension.this.getContext(), subMenuList);
+                            InputSubMenu subMenu = new InputSubMenu(EditExtension.this.getContext(), subMenuList);
                             subMenu.setOnItemClickListener(new ISubMenuItemClickListener() {
                                 public void onClick(int index) {
-                                    if(RongExtension.this.mExtensionClickListener != null) {
-                                        RongExtension.this.mExtensionClickListener.onMenuClick(i, index);
+                                    if(EditExtension.this.mExtensionClickListener != null) {
+                                        EditExtension.this.mExtensionClickListener.onMenuClick(j, index);
                                     }
 
                                 }
                             });
                             subMenu.showAtLocation(v);
-                        } else if(RongExtension.this.mExtensionClickListener != null) {
-                            RongExtension.this.mExtensionClickListener.onMenuClick(i, -1);
+                        } else if(EditExtension.this.mExtensionClickListener != null) {
+                            EditExtension.this.mExtensionClickListener.onMenuClick(j, -1);
                         }
 
                     }
                 });
-                ViewGroup menuBar = (ViewGroup)this.mMenuContainer.findViewById(id.rc_menu_bar);
+                ViewGroup menuBar = (ViewGroup)this.mMenuContainer.findViewById(R.id.rc_menu_bar);
                 menuBar.addView(rootMenu);
             }
 
@@ -254,15 +264,15 @@ public class EditExtension  extends LinearLayout {
         }
 
         if(visibility == 8) {
-            this.mMenuContainer.setVisibility(8);
+            this.mMenuContainer.setVisibility(GONE);
         } else {
-            this.mMenuContainer.setVisibility(0);
+            this.mMenuContainer.setVisibility(VISIBLE);
         }
 
     }
 
     public void setExtensionBarMode(CustomServiceMode mode) {
-        switch(RongExtension.SyntheticClass_1.$SwitchMap$io$rong$imlib$model$CustomServiceMode[mode.ordinal()]) {
+        switch(CustomServiceMode.values()[mode.ordinal()].ordinal()) {
             case 1:
                 this.setC();
                 break;
@@ -272,18 +282,18 @@ public class EditExtension  extends LinearLayout {
                     this.setInputBarStyle(this.mStyle);
                 }
 
-                this.mVoiceToggle.setImageResource(drawable.rc_voice_toggle_selector);
+                this.mVoiceToggle.setImageResource(R.drawable.rc_voice_toggle_selector);
                 this.mVoiceToggle.setOnClickListener(this.mVoiceToggleClickListener);
                 break;
             case 4:
                 this.setC();
                 break;
             case 5:
-                this.mVoiceToggle.setImageResource(drawable.rc_cs_admin_selector);
+                this.mVoiceToggle.setImageResource(R.drawable.rc_cs_admin_selector);
                 this.mVoiceToggle.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
-                        if(RongExtension.this.mExtensionClickListener != null) {
-                            RongExtension.this.mExtensionClickListener.onSwitchToggleClick(v, RongExtension.this.mContainerLayout);
+                        if(EditExtension.this.mExtensionClickListener != null) {
+                            EditExtension.this.mExtensionClickListener.onSwitchToggleClick(v, EditExtension.this.mContainerLayout);
                         }
 
                     }
@@ -340,7 +350,7 @@ public class EditExtension  extends LinearLayout {
         if(this.mEmotionTabAdapter != null && tab != null && !TextUtils.isEmpty(tag)) {
             return this.mEmotionTabAdapter.addTab(index, tab, tag);
         } else {
-            RLog.e("RongExtension", "addEmoticonTab Failure");
+            Log.e("EditExtension", "addEmoticonTab Failure");
             return false;
         }
     }
@@ -423,17 +433,17 @@ public class EditExtension  extends LinearLayout {
         IPluginModule pluginModule = this.mPluginAdapter.getPluginModule(position);
         if(pluginModule != null) {
             if(this.mExtensionClickListener != null && resultCode == -1) {
-                if(pluginModule instanceof ImagePlugin) {
-                    boolean lat1 = data.getBooleanExtra("sendOrigin", false);
-                    ArrayList list = data.getParcelableArrayListExtra("android.intent.extra.RETURN_RESULT");
-                    this.mExtensionClickListener.onImageResult(list, lat1);
-                } else if(pluginModule instanceof DefaultLocationPlugin || pluginModule instanceof CombineLocationPlugin) {
-                    double lat = data.getDoubleExtra("lat", 0.0D);
-                    double lng = data.getDoubleExtra("lng", 0.0D);
-                    String poi = data.getStringExtra("poi");
-                    String thumb = data.getStringExtra("thumb");
-                    this.mExtensionClickListener.onLocationResult(lat, lng, poi, Uri.parse(thumb));
-                }
+//                if(pluginModule instanceof ImagePlugin) {
+//                    boolean lat1 = data.getBooleanExtra("sendOrigin", false);
+//                    ArrayList list = data.getParcelableArrayListExtra("android.intent.extra.RETURN_RESULT");
+//                    this.mExtensionClickListener.onImageResult(list, lat1);
+//                } else if(pluginModule instanceof DefaultLocationPlugin || pluginModule instanceof CombineLocationPlugin) {
+//                    double lat = data.getDoubleExtra("lat", 0.0D);
+//                    double lng = data.getDoubleExtra("lng", 0.0D);
+//                    String poi = data.getStringExtra("poi");
+//                    String thumb = data.getStringExtra("thumb");
+//                    this.mExtensionClickListener.onLocationResult(lat, lng, poi, Uri.parse(thumb));
+//                }
             }
 
             pluginModule.onActivityResult(reqCode, resultCode, data);
@@ -451,59 +461,59 @@ public class EditExtension  extends LinearLayout {
     }
 
     private void initData() {
-        this.mExtensionModuleList = RongExtensionManager.getInstance().getExtensionModules();
+        this.mExtensionModuleList = EditExtensionManager.getInstance().getExtensionModules();
         this.mPluginAdapter = new PluginAdapter();
         this.mPluginAdapter.setOnPluginClickListener(new IPluginClickListener() {
             public void onClick(IPluginModule pluginModule, int position) {
-                if(RongExtension.this.mExtensionClickListener != null) {
-                    RongExtension.this.mExtensionClickListener.onPluginClicked(pluginModule, position);
+                if(EditExtension.this.mExtensionClickListener != null) {
+                    EditExtension.this.mExtensionClickListener.onPluginClicked(pluginModule, position);
                 }
 
-                pluginModule.onClick(RongExtension.this.mFragment, RongExtension.this);
+                pluginModule.onClick(EditExtension.this.mFragment, EditExtension.this);
             }
         });
         this.mEmotionTabAdapter = new EmoticonTabAdapter();
-        this.mUserId = RongIMClient.getInstance().getCurrentUserId();
+        this.mUserId ="1001";// RongIMClient.getInstance().getCurrentUserId();
 
         try {
             boolean e = this.getResources().getBoolean(this.getResources().getIdentifier("rc_extension_history", "bool", this.getContext().getPackageName()));
             ExtensionHistoryUtil.setEnableHistory(e);
             ExtensionHistoryUtil.addExceptConversationType(ConversationType.CUSTOMER_SERVICE);
         } catch (Resources.NotFoundException var2) {
-            RLog.e("RongExtension", "rc_extension_history not configure in rc_configuration.xml");
+            Log.e("EditExtension", "rc_extension_history not configure in rc_configuration.xml");
             var2.printStackTrace();
         }
 
     }
 
     private void initView() {
-        this.setOrientation(1);
-        this.setBackgroundColor(this.getContext().getResources().getColor(color.rc_extension_normal));
-        this.mExtensionBar = (ViewGroup)LayoutInflater.from(this.getContext()).inflate(layout.rc_ext_extension_bar, (ViewGroup)null);
-        this.mMainBar = (LinearLayout)this.mExtensionBar.findViewById(id.ext_main_bar);
-        this.mSwitchLayout = (ViewGroup)this.mExtensionBar.findViewById(id.rc_switch_layout);
-        this.mContainerLayout = (ViewGroup)this.mExtensionBar.findViewById(id.rc_container_layout);
-        this.mPluginLayout = (ViewGroup)this.mExtensionBar.findViewById(id.rc_plugin_layout);
-        this.mEditTextLayout = LayoutInflater.from(this.getContext()).inflate(layout.rc_ext_input_edit_text, (ViewGroup)null);
-        this.mEditTextLayout.setVisibility(0);
+        this.setOrientation(VERTICAL);
+        this.setBackgroundColor(this.getContext().getResources().getColor(R.color.rc_extension_normal));
+        this.mExtensionBar = (ViewGroup)LayoutInflater.from(this.getContext()).inflate(R.layout.rc_ext_extension_bar, (ViewGroup)null);
+        this.mMainBar = (LinearLayout)this.mExtensionBar.findViewById(R.id.ext_main_bar);
+        this.mSwitchLayout = (ViewGroup)this.mExtensionBar.findViewById(R.id.rc_switch_layout);
+        this.mContainerLayout = (ViewGroup)this.mExtensionBar.findViewById(R.id.rc_container_layout);
+        this.mPluginLayout = (ViewGroup)this.mExtensionBar.findViewById(R.id.rc_plugin_layout);
+        this.mEditTextLayout = LayoutInflater.from(this.getContext()).inflate(R.layout.rc_ext_input_edit_text, (ViewGroup)null);
+        this.mEditTextLayout.setVisibility(VISIBLE);
         this.mContainerLayout.addView(this.mEditTextLayout);
-        LayoutInflater.from(this.getContext()).inflate(layout.rc_ext_voice_input, this.mContainerLayout, true);
-        this.mVoiceInputToggle = this.mContainerLayout.findViewById(id.rc_audio_input_toggle);
-        this.mVoiceInputToggle.setVisibility(8);
-        this.mEditText = (EditText)this.mExtensionBar.findViewById(id.rc_edit_text);
-        this.mSendToggle = (FrameLayout)this.mExtensionBar.findViewById(id.rc_send_toggle);
-        this.mPluginToggle = (ImageView)this.mExtensionBar.findViewById(id.rc_plugin_toggle);
+        LayoutInflater.from(this.getContext()).inflate(R.layout.rc_ext_voice_input, this.mContainerLayout, true);
+        this.mVoiceInputToggle = this.mContainerLayout.findViewById(R.id.rc_audio_input_toggle);
+        this.mVoiceInputToggle.setVisibility(GONE);
+        this.mEditText = (EditText)this.mExtensionBar.findViewById(R.id.rc_edit_text);
+        this.mSendToggle = (FrameLayout)this.mExtensionBar.findViewById(R.id.rc_send_toggle);
+        this.mPluginToggle = (ImageView)this.mExtensionBar.findViewById(R.id.rc_plugin_toggle);
         this.mEditText.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 if(0 == event.getAction()) {
-                    if(RongExtension.this.mExtensionClickListener != null) {
-                        RongExtension.this.mExtensionClickListener.onEditTextClick(RongExtension.this.mEditText);
+                    if(EditExtension.this.mExtensionClickListener != null) {
+                        EditExtension.this.mExtensionClickListener.onEditTextClick(EditExtension.this.mEditText);
                     }
 
-                    RongExtension.this.showInputKeyBoard();
-                    RongExtension.this.mContainerLayout.setSelected(true);
-                    RongExtension.this.hidePluginBoard();
-                    RongExtension.this.hideEmoticonBoard();
+                    EditExtension.this.showInputKeyBoard();
+                    EditExtension.this.mContainerLayout.setSelected(true);
+                    EditExtension.this.hidePluginBoard();
+                    EditExtension.this.hideEmoticonBoard();
                 }
 
                 return false;
@@ -511,9 +521,9 @@ public class EditExtension  extends LinearLayout {
         });
         this.mEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus && !TextUtils.isEmpty(RongExtension.this.mEditText.getText())) {
-                    RongExtension.this.mSendToggle.setVisibility(0);
-                    RongExtension.this.mPluginLayout.setVisibility(8);
+                if(hasFocus && !TextUtils.isEmpty(EditExtension.this.mEditText.getText())) {
+                    EditExtension.this.mSendToggle.setVisibility(VISIBLE);
+                    EditExtension.this.mPluginLayout.setVisibility(GONE);
                 }
 
             }
@@ -523,8 +533,8 @@ public class EditExtension  extends LinearLayout {
             private int count;
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(RongExtension.this.mExtensionClickListener != null) {
-                    RongExtension.this.mExtensionClickListener.beforeTextChanged(s, start, count, after);
+                if(EditExtension.this.mExtensionClickListener != null) {
+                    EditExtension.this.mExtensionClickListener.beforeTextChanged(s, start, count, after);
                 }
 
             }
@@ -532,82 +542,82 @@ public class EditExtension  extends LinearLayout {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 this.start = start;
                 this.count = count;
-                if(RongExtension.this.mExtensionClickListener != null) {
-                    RongExtension.this.mExtensionClickListener.onTextChanged(s, start, before, count);
+                if(EditExtension.this.mExtensionClickListener != null) {
+                    EditExtension.this.mExtensionClickListener.onTextChanged(s, start, before, count);
                 }
 
-                if(RongExtension.this.mVoiceInputToggle.getVisibility() == 0) {
-                    RongExtension.this.mSendToggle.setVisibility(8);
-                    RongExtension.this.mPluginLayout.setVisibility(0);
+                if(EditExtension.this.mVoiceInputToggle.getVisibility() == VISIBLE) {
+                    EditExtension.this.mSendToggle.setVisibility(GONE);
+                    EditExtension.this.mPluginLayout.setVisibility(VISIBLE);
                 } else if(s != null && s.length() != 0) {
-                    RongExtension.this.mSendToggle.setVisibility(0);
-                    RongExtension.this.mPluginLayout.setVisibility(8);
+                    EditExtension.this.mSendToggle.setVisibility(VISIBLE);
+                    EditExtension.this.mPluginLayout.setVisibility(GONE);
                 } else {
-                    RongExtension.this.mSendToggle.setVisibility(8);
-                    RongExtension.this.mPluginLayout.setVisibility(0);
+                    EditExtension.this.mSendToggle.setVisibility(GONE);
+                    EditExtension.this.mPluginLayout.setVisibility(VISIBLE);
                 }
 
             }
 
             public void afterTextChanged(Editable s) {
                 if(AndroidEmoji.isEmoji(s.subSequence(this.start, this.start + this.count).toString())) {
-                    RongExtension.this.mEditText.removeTextChangedListener(this);
-                    RongExtension.this.mEditText.setText(AndroidEmoji.ensure(s.toString()), TextView.BufferType.SPANNABLE);
-                    RongExtension.this.mEditText.setSelection(this.start + this.count);
-                    RongExtension.this.mEditText.addTextChangedListener(this);
+                    EditExtension.this.mEditText.removeTextChangedListener(this);
+                    EditExtension.this.mEditText.setText(AndroidEmoji.ensure(s.toString()), TextView.BufferType.SPANNABLE);
+                    EditExtension.this.mEditText.setSelection(this.start + this.count);
+                    EditExtension.this.mEditText.addTextChangedListener(this);
                 }
 
-                if(RongExtension.this.mExtensionClickListener != null) {
-                    RongExtension.this.mExtensionClickListener.afterTextChanged(s);
+                if(EditExtension.this.mExtensionClickListener != null) {
+                    EditExtension.this.mExtensionClickListener.afterTextChanged(s);
                 }
 
             }
         });
         this.mEditText.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                return RongExtension.this.mExtensionClickListener != null && RongExtension.this.mExtensionClickListener.onKey(RongExtension.this.mEditText, keyCode, event);
+                return EditExtension.this.mExtensionClickListener != null && EditExtension.this.mExtensionClickListener.onKey(EditExtension.this.mEditText, keyCode, event);
             }
         });
-        this.mVoiceToggle = (ImageView)this.mExtensionBar.findViewById(id.rc_voice_toggle);
+        this.mVoiceToggle = (ImageView)this.mExtensionBar.findViewById(R.id.rc_voice_toggle);
         this.mVoiceToggleClickListener = new OnClickListener() {
             public void onClick(View v) {
-                if(RongExtension.this.mExtensionClickListener != null) {
-                    RongExtension.this.mExtensionClickListener.onSwitchToggleClick(v, RongExtension.this.mContainerLayout);
+                if(EditExtension.this.mExtensionClickListener != null) {
+                    EditExtension.this.mExtensionClickListener.onSwitchToggleClick(v, EditExtension.this.mContainerLayout);
                 }
 
-                if(RongExtension.this.mVoiceInputToggle.getVisibility() == 8) {
-                    RongExtension.this.mEditTextLayout.setVisibility(8);
-                    RongExtension.this.mSendToggle.setVisibility(8);
-                    RongExtension.this.mPluginLayout.setVisibility(0);
-                    RongExtension.this.hideInputKeyBoard();
-                    RongExtension.this.showVoiceInputToggle();
-                    RongExtension.this.mContainerLayout.setClickable(true);
-                    RongExtension.this.mContainerLayout.setSelected(false);
+                if(EditExtension.this.mVoiceInputToggle.getVisibility() == GONE) {
+                    EditExtension.this.mEditTextLayout.setVisibility(GONE);
+                    EditExtension.this.mSendToggle.setVisibility(GONE);
+                    EditExtension.this.mPluginLayout.setVisibility(VISIBLE);
+                    EditExtension.this.hideInputKeyBoard();
+                    EditExtension.this.showVoiceInputToggle();
+                    EditExtension.this.mContainerLayout.setClickable(true);
+                    EditExtension.this.mContainerLayout.setSelected(false);
                 } else {
-                    RongExtension.this.mEditTextLayout.setVisibility(0);
-                    RongExtension.this.hideVoiceInputToggle();
-                    RongExtension.this.mEmoticonToggle.setImageResource(drawable.rc_emotion_toggle_selector);
-                    if(RongExtension.this.mEditText.getText().length() > 0) {
-                        RongExtension.this.mSendToggle.setVisibility(0);
-                        RongExtension.this.mPluginLayout.setVisibility(8);
+                    EditExtension.this.mEditTextLayout.setVisibility(VISIBLE);
+                    EditExtension.this.hideVoiceInputToggle();
+                    EditExtension.this.mEmoticonToggle.setImageResource(R.drawable.rc_emotion_toggle_selector);
+                    if(EditExtension.this.mEditText.getText().length() > 0) {
+                        EditExtension.this.mSendToggle.setVisibility(VISIBLE);
+                        EditExtension.this.mPluginLayout.setVisibility(GONE);
                     } else {
-                        RongExtension.this.mSendToggle.setVisibility(8);
-                        RongExtension.this.mPluginLayout.setVisibility(0);
+                        EditExtension.this.mSendToggle.setVisibility(GONE);
+                        EditExtension.this.mPluginLayout.setVisibility(VISIBLE);
                     }
 
-                    RongExtension.this.showInputKeyBoard();
-                    RongExtension.this.mContainerLayout.setSelected(true);
+                    EditExtension.this.showInputKeyBoard();
+                    EditExtension.this.mContainerLayout.setSelected(true);
                 }
 
-                RongExtension.this.hidePluginBoard();
-                RongExtension.this.hideEmoticonBoard();
+                EditExtension.this.hidePluginBoard();
+                EditExtension.this.hideEmoticonBoard();
             }
         };
         this.mVoiceToggle.setOnClickListener(this.mVoiceToggleClickListener);
         this.mVoiceInputToggle.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if(RongExtension.this.mExtensionClickListener != null) {
-                    RongExtension.this.mExtensionClickListener.onVoiceInputToggleTouch(v, event);
+                if(EditExtension.this.mExtensionClickListener != null) {
+                    EditExtension.this.mExtensionClickListener.onVoiceInputToggleTouch(v, event);
                 }
 
                 return false;
@@ -615,71 +625,71 @@ public class EditExtension  extends LinearLayout {
         });
         this.mSendToggle.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                String text = RongExtension.this.mEditText.getText().toString();
-                RongExtension.this.mEditText.getText().clear();
-                RongExtension.this.mEditText.setText("");
-                if(RongExtension.this.mExtensionClickListener != null) {
-                    RongExtension.this.mExtensionClickListener.onSendToggleClick(v, text);
+                String text = EditExtension.this.mEditText.getText().toString();
+                EditExtension.this.mEditText.getText().clear();
+                EditExtension.this.mEditText.setText("");
+                if(EditExtension.this.mExtensionClickListener != null) {
+                    EditExtension.this.mExtensionClickListener.onSendToggleClick(v, text);
                 }
 
             }
         });
         this.mPluginToggle.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                if(RongExtension.this.mExtensionClickListener != null) {
-                    RongExtension.this.mExtensionClickListener.onPluginToggleClick(v, RongExtension.this);
+                if(EditExtension.this.mExtensionClickListener != null) {
+                    EditExtension.this.mExtensionClickListener.onPluginToggleClick(v, EditExtension.this);
                 }
 
-                RongExtension.this.setPluginBoard();
+                EditExtension.this.setPluginBoard();
             }
         });
-        this.mEmoticonToggle = (ImageView)this.mExtensionBar.findViewById(id.rc_emoticon_toggle);
+        this.mEmoticonToggle = (ImageView)this.mExtensionBar.findViewById(R.id.rc_emoticon_toggle);
         this.mEmoticonToggle.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                if(RongExtension.this.mExtensionClickListener != null) {
-                    RongExtension.this.mExtensionClickListener.onEmoticonToggleClick(v, RongExtension.this);
+                if(EditExtension.this.mExtensionClickListener != null) {
+                    EditExtension.this.mExtensionClickListener.onEmoticonToggleClick(v, EditExtension.this);
                 }
 
-                if(RongExtension.this.isKeyBoardActive()) {
-                    RongExtension.this.hideInputKeyBoard();
-                    RongExtension.this.getHandler().postDelayed(new Runnable() {
+                if(EditExtension.this.isKeyBoardActive()) {
+                    EditExtension.this.hideInputKeyBoard();
+                    EditExtension.this.getHandler().postDelayed(new Runnable() {
                         public void run() {
-                            RongExtension.this.setEmoticonBoard();
+                            EditExtension.this.setEmoticonBoard();
                         }
                     }, 200L);
                 } else {
-                    RongExtension.this.setEmoticonBoard();
+                    EditExtension.this.setEmoticonBoard();
                 }
 
-                RongExtension.this.hidePluginBoard();
+                EditExtension.this.hidePluginBoard();
             }
         });
-        this.mPSMenu = (ImageView)this.mExtensionBar.findViewById(id.rc_switch_to_menu);
+        this.mPSMenu = (ImageView)this.mExtensionBar.findViewById(R.id.rc_switch_to_menu);
         this.mPSMenu.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                RongExtension.this.setExtensionBarVisibility(8);
-                RongExtension.this.setMenuVisibility(0, RongExtension.this.mInputMenuList);
+                EditExtension.this.setExtensionBarVisibility(8);
+                EditExtension.this.setMenuVisibility(0, EditExtension.this.mInputMenuList);
             }
         });
-        this.mPSDivider = this.mExtensionBar.findViewById(id.rc_switch_divider);
+        this.mPSDivider = this.mExtensionBar.findViewById(R.id.rc_switch_divider);
         this.addView(this.mExtensionBar);
     }
 
     private void hideVoiceInputToggle() {
-        this.mVoiceToggle.setImageResource(drawable.rc_voice_toggle_selector);
-        this.mVoiceInputToggle.setVisibility(8);
+        this.mVoiceToggle.setImageResource(R.drawable.rc_voice_toggle_selector);
+        this.mVoiceInputToggle.setVisibility(GONE);
         ExtensionHistoryUtil.setExtensionBarState(this.getContext(), this.mUserId, this.mConversationType, ExtensionBarState.NORMAL);
     }
 
     private void showVoiceInputToggle() {
-        this.mVoiceInputToggle.setVisibility(0);
-        this.mVoiceToggle.setImageResource(drawable.rc_keyboard_selector);
+        this.mVoiceInputToggle.setVisibility(VISIBLE);
+        this.mVoiceToggle.setImageResource(R.drawable.rc_keyboard_selector);
         ExtensionHistoryUtil.setExtensionBarState(this.getContext(), this.mUserId, this.mConversationType, ExtensionBarState.VOICE);
     }
 
     private void hideEmoticonBoard() {
-        this.mEmotionTabAdapter.setVisibility(8);
-        this.mEmoticonToggle.setImageResource(drawable.rc_emotion_toggle_selector);
+        this.mEmotionTabAdapter.setVisibility(GONE);
+        this.mEmoticonToggle.setImageResource(R.drawable.rc_emotion_toggle_selector);
     }
 
     private void setEmoticonBoard() {
@@ -687,25 +697,25 @@ public class EditExtension  extends LinearLayout {
             if(this.mEmotionTabAdapter.getVisibility() == 0) {
                 this.mEmotionTabAdapter.setVisibility(8);
                 this.mEmoticonToggle.setSelected(false);
-                this.mEmoticonToggle.setImageResource(drawable.rc_emotion_toggle_selector);
+                this.mEmoticonToggle.setImageResource(R.drawable.rc_emotion_toggle_selector);
                 this.showInputKeyBoard();
             } else {
                 this.mEmotionTabAdapter.setVisibility(0);
                 this.mContainerLayout.setSelected(true);
                 this.mEmoticonToggle.setSelected(true);
-                this.mEmoticonToggle.setImageResource(drawable.rc_keyboard_selector);
+                this.mEmoticonToggle.setImageResource(R.drawable.rc_keyboard_selector);
             }
         } else {
             this.mEmotionTabAdapter.bindView(this);
             this.mEmotionTabAdapter.setVisibility(0);
             this.mContainerLayout.setSelected(true);
             this.mEmoticonToggle.setSelected(true);
-            this.mEmoticonToggle.setImageResource(drawable.rc_keyboard_selector);
+            this.mEmoticonToggle.setImageResource(R.drawable.rc_keyboard_selector);
         }
 
         if(!TextUtils.isEmpty(this.mEditText.getText())) {
-            this.mSendToggle.setVisibility(0);
-            this.mPluginLayout.setVisibility(8);
+            this.mSendToggle.setVisibility(VISIBLE);
+            this.mPluginLayout.setVisibility(GONE);
         }
 
     }
@@ -724,18 +734,18 @@ public class EditExtension  extends LinearLayout {
             if(this.mPluginAdapter.getVisibility() == 0) {
                 View pager = this.mPluginAdapter.getPager();
                 if(pager != null) {
-                    pager.setVisibility(pager.getVisibility() == 8?0:8);
+                    pager.setVisibility(pager.getVisibility() == GONE?VISIBLE:GONE);
                 } else {
                     this.mPluginAdapter.setVisibility(8);
                     this.mContainerLayout.setSelected(true);
                     this.showInputKeyBoard();
                 }
             } else {
-                this.mEmoticonToggle.setImageResource(drawable.rc_emotion_toggle_selector);
+                this.mEmoticonToggle.setImageResource(R.drawable.rc_emotion_toggle_selector);
                 if(this.isKeyBoardActive()) {
                     this.getHandler().postDelayed(new Runnable() {
                         public void run() {
-                            RongExtension.this.mPluginAdapter.setVisibility(0);
+                            EditExtension.this.mPluginAdapter.setVisibility(0);
                         }
                     }, 200L);
                 } else {
@@ -747,7 +757,7 @@ public class EditExtension  extends LinearLayout {
                 this.mContainerLayout.setSelected(false);
             }
         } else {
-            this.mEmoticonToggle.setImageResource(drawable.rc_emotion_toggle_selector);
+            this.mEmoticonToggle.setImageResource(R.drawable.rc_emotion_toggle_selector);
             this.mPluginAdapter.bindView(this);
             this.mPluginAdapter.setVisibility(0);
             this.mContainerLayout.setSelected(false);
@@ -756,7 +766,7 @@ public class EditExtension  extends LinearLayout {
         }
 
         this.hideVoiceInputToggle();
-        this.mEditTextLayout.setVisibility(0);
+        this.mEditTextLayout.setVisibility(VISIBLE);
     }
 
     private boolean isKeyBoardActive() {
@@ -764,7 +774,7 @@ public class EditExtension  extends LinearLayout {
     }
 
     private void hideInputKeyBoard() {
-        InputMethodManager imm = (InputMethodManager)this.getContext().getSystemService("input_method");
+        InputMethodManager imm = (InputMethodManager)this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(this.mEditText.getWindowToken(), 0);
         this.mEditText.clearFocus();
         this.isKeyBoardActive = false;
@@ -772,18 +782,18 @@ public class EditExtension  extends LinearLayout {
 
     private void showInputKeyBoard() {
         this.mEditText.requestFocus();
-        InputMethodManager imm = (InputMethodManager)this.getContext().getSystemService("input_method");
+        InputMethodManager imm = (InputMethodManager)this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(this.mEditText, 0);
         this.mEmoticonToggle.setSelected(false);
         this.isKeyBoardActive = true;
     }
 
     private void setSCE() {
-        this.mSwitchLayout.setVisibility(0);
-        if(this.mSendToggle.getVisibility() == 0) {
-            this.mPluginLayout.setVisibility(8);
+        this.mSwitchLayout.setVisibility(VISIBLE);
+        if(this.mSendToggle.getVisibility() == VISIBLE) {
+            this.mPluginLayout.setVisibility(GONE);
         } else {
-            this.mPluginLayout.setVisibility(0);
+            this.mPluginLayout.setVisibility(VISIBLE);
         }
 
         this.mMainBar.removeAllViews();
@@ -793,17 +803,17 @@ public class EditExtension  extends LinearLayout {
     }
 
     private void setSC() {
-        this.mSwitchLayout.setVisibility(0);
+        this.mSwitchLayout.setVisibility(VISIBLE);
         this.mMainBar.removeAllViews();
         this.mMainBar.addView(this.mSwitchLayout);
         this.mMainBar.addView(this.mContainerLayout);
     }
 
     private void setCE() {
-        if(this.mSendToggle.getVisibility() == 0) {
-            this.mPluginLayout.setVisibility(8);
+        if(this.mSendToggle.getVisibility() == VISIBLE) {
+            this.mPluginLayout.setVisibility(GONE);
         } else {
-            this.mPluginLayout.setVisibility(0);
+            this.mPluginLayout.setVisibility(VISIBLE);
         }
 
         this.mMainBar.removeAllViews();
@@ -812,10 +822,10 @@ public class EditExtension  extends LinearLayout {
     }
 
     private void setEC() {
-        if(this.mSendToggle.getVisibility() == 0) {
-            this.mPluginLayout.setVisibility(8);
+        if(this.mSendToggle.getVisibility() == VISIBLE) {
+            this.mPluginLayout.setVisibility(GONE);
         } else {
-            this.mPluginLayout.setVisibility(0);
+            this.mPluginLayout.setVisibility(VISIBLE);
         }
 
         this.mMainBar.removeAllViews();
@@ -831,15 +841,15 @@ public class EditExtension  extends LinearLayout {
     private void initPanelStyle() {
         ExtensionBarState state = ExtensionHistoryUtil.getExtensionBarState(this.getContext(), this.mUserId, this.mConversationType);
         if(state == ExtensionBarState.NORMAL) {
-            this.mVoiceToggle.setImageResource(drawable.rc_voice_toggle_selector);
-            this.mEditTextLayout.setVisibility(0);
-            this.mVoiceInputToggle.setVisibility(8);
+            this.mVoiceToggle.setImageResource(R.drawable.rc_voice_toggle_selector);
+            this.mEditTextLayout.setVisibility(VISIBLE);
+            this.mVoiceInputToggle.setVisibility(GONE);
         } else {
-            this.mVoiceToggle.setImageResource(drawable.rc_keyboard_selector);
-            this.mEditTextLayout.setVisibility(8);
-            this.mVoiceInputToggle.setVisibility(0);
-            this.mSendToggle.setVisibility(8);
-            this.mPluginLayout.setVisibility(0);
+            this.mVoiceToggle.setImageResource(R.drawable.rc_keyboard_selector);
+            this.mEditTextLayout.setVisibility(GONE);
+            this.mVoiceInputToggle.setVisibility(VISIBLE);
+            this.mSendToggle.setVisibility(GONE);
+            this.mPluginLayout.setVisibility(VISIBLE);
         }
 
     }

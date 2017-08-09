@@ -171,7 +171,7 @@ public class PluginAdapter {
     private void initIndicator(int pages, LinearLayout indicator) {
         for(int i = 0; i < pages; ++i) {
             ImageView imageView = (ImageView)this.mLayoutInflater.inflate(R.layout.rc_ext_indicator, (ViewGroup)null);
-            imageView.setImageResource(R.mipmap.rc_ext_indicator);
+            imageView.setImageResource(R.drawable.rc_ext_indicator);
             indicator.addView(imageView);
             if(pages <= 1) {
                 indicator.setVisibility(View.INVISIBLE);
@@ -200,12 +200,12 @@ public class PluginAdapter {
             ImageView curView;
             if(pre >= 0) {
                 curView = (ImageView)this.mIndicator.getChildAt(pre);
-                curView.setImageResource(R.mipmap.rc_ext_indicator);
+                curView.setImageResource(R.drawable.rc_ext_indicator);
             }
 
             if(cur >= 0) {
                 curView = (ImageView)this.mIndicator.getChildAt(cur);
-                curView.setImageResource(R.mipmap.rc_ext_indicator_hover);
+                curView.setImageResource(R.drawable.rc_ext_indicator_hover);
             }
         }
 

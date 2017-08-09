@@ -40,7 +40,7 @@ public class LikeEditText extends EditText {
     }
 
     public void init() {
-        delete_icon = mContext.getDrawable(R.mipmap.search_clear_pressed_write);
+        delete_icon = mContext.getDrawable(R.drawable.search_clear_pressed_write);
         addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

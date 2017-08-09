@@ -3,7 +3,7 @@ package com.golike.customviews;
 import android.os.Message;
 
 import com.golike.customviews.emoticon.IEmoticonTab;
-import com.golike.customviews.model.ConversationType;
+import com.golike.customviews.model.Conversation.ConversationType;
 import com.golike.customviews.plugin.IPluginModule;
 
 import java.util.List;

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.golike.customviews.EditExtensionManager;
 import com.golike.myapplication.R;
 
 /**
@@ -65,7 +66,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        return inflater.inflate(R.layout.rc_fr_conversation, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
