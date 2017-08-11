@@ -4,12 +4,26 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
+import com.golike.customviews.EditExtension;
 import com.golike.customviews.EditExtensionManager;
+import com.golike.customviews.IExtensionClickListener;
+import com.golike.customviews.model.Conversation;
+import com.golike.customviews.model.Conversation.ConversationType;
+import com.golike.customviews.plugin.IPluginModule;
+import com.golike.customviews.utilities.PermissionCheckUtil;
 import com.golike.myapplication.R;
+import com.golike.myapplication.manager.AudioRecordManager;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,7 +33,7 @@ import com.golike.myapplication.R;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements IExtensionClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,6 +44,12 @@ public class HomeFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private EditExtension mEditExtension;
+    private boolean mEnableMention;
+    private float mLastTouchY;
+    private boolean mUpDirection;
+    private float mOffsetLimit;
+    private boolean finishing = false;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -65,8 +85,13 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.rc_fr_conversation, container, false);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.rc_fr_conversation, container, false);
+        this.mEditExtension = (EditExtension)view.findViewById(R.id.rc_extension);
+        this.mEditExtension.setConversation(Conversation.ConversationType.PRIVATE,"xxxx");
+        this.mEditExtension.setExtensionClickListener(this);
+        this.mEditExtension.setFragment(this);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -85,6 +110,118 @@ public class HomeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onSendToggleClick(View var1, String var2) {
+
+    }
+
+    @Override
+    public void onImageResult(List<Uri> var1, boolean var2) {
+
+    }
+
+    @Override
+    public void onLocationResult(double var1, double var3, String var5, Uri var6) {
+
+    }
+
+    @Override
+    public void onSwitchToggleClick(View var1, ViewGroup var2) {
+
+    }
+
+    @Override
+    public void onVoiceInputToggleTouch(View v, MotionEvent event) {
+        String[] permissions = new String[]{"android.permission.RECORD_AUDIO"};
+        if(!PermissionCheckUtil.checkPermissions(this.getActivity(), permissions)) {
+            if(event.getAction() == 0) {
+                PermissionCheckUtil.requestPermissions(this, permissions, 100);
+            }
+
+        } else {
+            if(event.getAction() == 0) {
+                //AudioPlayManager.getInstance().stopPlay();
+                AudioRecordManager.getInstance().startRecord(v.getRootView(),  ConversationType.PRIVATE, "xxx");
+                this.mLastTouchY = event.getY();
+                this.mUpDirection = false;
+                ((Button)v).setText(R.string.rc_audio_input_hover);
+            } else if(event.getAction() == 2) {
+                if(this.mLastTouchY - event.getY() > this.mOffsetLimit && !this.mUpDirection) {
+                    AudioRecordManager.getInstance().willCancelRecord();
+                    this.mUpDirection = true;
+                    ((Button)v).setText(R.string.rc_audio_input);
+                } else if(event.getY() - this.mLastTouchY > -this.mOffsetLimit && this.mUpDirection) {
+                    AudioRecordManager.getInstance().continueRecord();
+                    this.mUpDirection = false;
+                    ((Button)v).setText(R.string.rc_audio_input_hover);
+                }
+            } else if(event.getAction() == 1 || event.getAction() == 3) {
+                AudioRecordManager.getInstance().stopRecord();
+                ((Button)v).setText(R.string.rc_audio_input);
+            }
+
+//            if(this.mConversationType.equals(ConversationType.PRIVATE)) {
+//                RongIMClient.getInstance().sendTypingStatus(this.mConversationType, this.mTargetId, "RC:VcMsg");
+//            }
+
+        }
+    }
+
+    @Override
+    public void onEmoticonToggleClick(View var1, ViewGroup var2) {
+
+    }
+
+    @Override
+    public void onPluginToggleClick(View var1, ViewGroup var2) {
+
+    }
+
+    @Override
+    public void onMenuClick(int var1, int var2) {
+
+    }
+
+    @Override
+    public void onEditTextClick(EditText var1) {
+
+    }
+
+    @Override
+    public boolean onKey(View var1, int var2, KeyEvent var3) {
+        return false;
+    }
+
+    @Override
+    public void onExtensionCollapsed() {
+
+    }
+
+    @Override
+    public void onExtensionExpanded(int var1) {
+
+    }
+
+    @Override
+    public void onPluginClicked(IPluginModule var1, int var2) {
+
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 
     /**
