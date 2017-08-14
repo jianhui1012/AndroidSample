@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -12,16 +14,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.golike.customviews.EditExtension;
 import com.golike.customviews.EditExtensionManager;
 import com.golike.customviews.IExtensionClickListener;
 import com.golike.customviews.model.Conversation;
 import com.golike.customviews.model.Conversation.ConversationType;
+import com.golike.customviews.model.Message;
+import com.golike.customviews.model.TextMessage;
 import com.golike.customviews.plugin.IPluginModule;
 import com.golike.customviews.utilities.PermissionCheckUtil;
 import com.golike.myapplication.R;
 import com.golike.myapplication.manager.AudioRecordManager;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -50,6 +57,7 @@ public class HomeFragment extends Fragment implements IExtensionClickListener {
     private boolean mUpDirection;
     private float mOffsetLimit;
     private boolean finishing = false;
+    private FrameLayout mChatView;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -85,8 +93,9 @@ public class HomeFragment extends Fragment implements IExtensionClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.rc_fr_conversation, container, false);
+        View view=inflater.inflate(R.layout.chat_page, container, false);
         // Inflate the layout for this fragment
+        //this.mChatView = (FrameLayout)view.findViewById(R.id.chat_view);
         this.mEditExtension = (EditExtension)view.findViewById(R.id.rc_extension);
         this.mEditExtension.setConversation(Conversation.ConversationType.PRIVATE,"xxxx");
         this.mEditExtension.setExtensionClickListener(this);
@@ -113,9 +122,17 @@ public class HomeFragment extends Fragment implements IExtensionClickListener {
     }
 
     @Override
-    public void onSendToggleClick(View var1, String var2) {
+    public void onSendToggleClick(View view, String text) {
+        if(!TextUtils.isEmpty(text) && !TextUtils.isEmpty(text.trim())) {
+            //TextMessage textMessage = TextMessage.obtain(text);
+            Message message = Message.obtain("xxx", ConversationType.PRIVATE, text);
+            EventBus.getDefault().post(message);
+        } else {
+            Log.e("ConversationFragment", "text content must not be null");
+        }
 
     }
+
 
     @Override
     public void onImageResult(List<Uri> var1, boolean var2) {

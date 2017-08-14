@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     android:background="@android:color/transparent">
 
-    <com.golike.customviews.AutoRefreshListView
-        android:id="@id/rc_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/transparent"
-        android:cacheColorHint="@android:color/transparent"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:listSelector="@android:color/transparent" />
-
     <Button
         android:id="@+id/rc_unread_message_count"
         android:layout_width="wrap_content"
@@ -67,4 +57,14 @@
         android:orientation="vertical"
         android:visibility="gone"
         tools:visibility="visible" />
+
+    <com.golike.customviews.AutoRefreshListView
+        android:id="@id/rc_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:listSelector="@android:color/transparent" />
 </FrameLayout>
