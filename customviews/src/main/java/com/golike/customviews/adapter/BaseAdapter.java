@@ -41,6 +41,10 @@ public abstract class BaseAdapter<T> extends android.widget.BaseAdapter {
         return position;
     }
 
+    protected  <T extends View> T findViewById(View view,int id){
+        return (T) view.findViewById(id);
+    }
+
     public int findPosition(T message) {
         int index = this.getCount();
         int position = -1;

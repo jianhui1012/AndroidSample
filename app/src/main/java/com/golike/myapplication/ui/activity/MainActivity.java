@@ -41,7 +41,6 @@ public class MainActivity extends FragmentActivity  {
     }
 
     private void initFragments() {
-        ChatViewManger.init(this);
         mineFragment = new MineFragment();
         homeFragment=new HomeFragment();
         DaggerMainComponent.builder().minePresenterModule(new MinePresenterModule(mineFragment)).appComponent(SampleApplication.getInstance().getAppComponent()).build().inject(this);

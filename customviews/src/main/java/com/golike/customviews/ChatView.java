@@ -64,7 +64,7 @@ public class ChatView extends FrameLayout implements AbsListView.OnScrollListene
     public void initViews() {
         this.mChatUIView = LayoutInflater.from(this.getContext()).inflate(R.layout.rc_fr_conversation, (ViewGroup) null);
         this.mMsgListView = this.findViewById(mChatUIView, R.id.rc_layout_msg_list);
-        this.mChatList = (AutoRefreshListView)this.findViewById(mMsgListView, R.id.rc_list);
+        this.mChatList = this.findViewById(mMsgListView, R.id.rc_list);
         this.mChatList.requestDisallowInterceptTouchEvent(true);
         this.mChatList.setMode(Mode.START);
         this.mChatList.setTranscriptMode(2);
@@ -90,6 +90,7 @@ public class ChatView extends FrameLayout implements AbsListView.OnScrollListene
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(Message msg){
         UIMessage uiMsg=UIMessage.obtain(msg);
+        uiMsg.setSentStatus(Message.SentStatus.SENT);
         this.mListAdapter.add(uiMsg);
         this.mListAdapter.notifyDataSetChanged();
         //this.mChatList.smoothScrollToPosition(this.mChatList.getCount());

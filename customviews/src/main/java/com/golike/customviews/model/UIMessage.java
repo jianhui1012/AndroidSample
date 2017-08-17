@@ -131,7 +131,23 @@ public class UIMessage {
         return uiMessage;
     }
 
+    public MessageContent getContent() {
+        return this.mMessage.getContent();
+    }
+
     public SpannableStringBuilder getTextMessageContent() {
+        if(this.textMessageContent == null) {
+            MessageContent content = this.mMessage.getContent();
+            if(content instanceof TextMessage) {
+                TextMessage textMessage = (TextMessage)content;
+                if(textMessage.getContent() != null) {
+                    SpannableStringBuilder spannable = new SpannableStringBuilder(textMessage.getContent());
+                    AndroidEmoji.ensure(spannable);
+                    this.setTextMessageContent(spannable);
+                }
+            }
+        }
+
         return this.textMessageContent;
     }
 

@@ -23,6 +23,7 @@ import com.golike.customviews.model.Conversation;
 import com.golike.customviews.model.Conversation.ConversationType;
 import com.golike.customviews.model.Message;
 import com.golike.customviews.model.TextMessage;
+import com.golike.customviews.model.UserInfo;
 import com.golike.customviews.plugin.IPluginModule;
 import com.golike.customviews.utilities.PermissionCheckUtil;
 import com.golike.myapplication.R;
@@ -124,8 +125,10 @@ public class HomeFragment extends Fragment implements IExtensionClickListener {
     @Override
     public void onSendToggleClick(View view, String text) {
         if(!TextUtils.isEmpty(text) && !TextUtils.isEmpty(text.trim())) {
-            //TextMessage textMessage = TextMessage.obtain(text);
-            Message message = Message.obtain("xxx", ConversationType.PRIVATE, text);
+            TextMessage textMessage = TextMessage.obtain(text);
+            textMessage.setUserInfo(new UserInfo("1001", "golike", Uri.parse("http://img.17bangtu.com/dfile?md5=99d16d4817174715ff86e3ef1e618ad5:200x200")));
+            Message message = Message.obtain("xxx", ConversationType.PRIVATE, textMessage);
+            message.setMessageDirection(Message.MessageDirection.SEND);
             EventBus.getDefault().post(message);
         } else {
             Log.e("ConversationFragment", "text content must not be null");

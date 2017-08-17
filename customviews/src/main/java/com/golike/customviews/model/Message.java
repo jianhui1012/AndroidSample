@@ -22,7 +22,7 @@ public class Message implements Parcelable {
     private String objectName;
     private String extra;
     private String UId;
-    private String content;
+    private MessageContent content;
     public static final Creator<Message> CREATOR = new Creator() {
         public Message createFromParcel(Parcel source) {
             return new Message(source);
@@ -46,7 +46,7 @@ public class Message implements Parcelable {
 
 
 
-    public static Message obtain(String targetId, ConversationType type,String content) {
+    public static Message obtain(String targetId, ConversationType type,MessageContent content) {
         Message obj = new Message();
         obj.setTargetId(targetId);
         obj.setConversationType(type);
@@ -191,11 +191,11 @@ public class Message implements Parcelable {
         return o == null?false:(o instanceof Message?this.messageId == ((Message)o).getMessageId():super.equals(o));
     }
 
-    public String getContent() {
+    public MessageContent getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(MessageContent content) {
         this.content = content;
     }
 
