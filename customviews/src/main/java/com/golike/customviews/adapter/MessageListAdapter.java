@@ -26,6 +26,8 @@ import com.golike.customviews.utilities.RongUtils;
 import com.golike.customviews.widget.ProviderContainerView;
 import com.golike.customviews.widget.provider.IContainerItemProvider;
 
+import java.text.SimpleDateFormat;
+
 
 /**
  * Created by admin on 2017/8/14.
@@ -168,6 +170,10 @@ public class MessageListAdapter extends BaseAdapter<UIMessage> {
                         holder.readReceiptStatus.setVisibility(View.GONE);
                         var13 = null;
                         if (data.getMessageDirection().equals(MessageDirection.SEND)) {
+                            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                            java.util.Date date=new java.util.Date();
+                            String var19=sdf.format(date);
+                            holder.time.setText(var19);
                             if (data.getUserInfo() != null) {
                                 var13 = data.getUserInfo();
                             } else if (data.getMessage() != null && data.getMessage().getContent() != null) {

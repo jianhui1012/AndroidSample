@@ -3,17 +3,14 @@ package com.golike.customviews;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.golike.customviews.AutoRefreshListView.Mode;
 import com.golike.customviews.adapter.MessageListAdapter;
-import com.golike.customviews.model.Conversation;
 import com.golike.customviews.model.Message;
 import com.golike.customviews.model.UIMessage;
 
