@@ -1,7 +1,7 @@
-package com.golike.myapplication.manager;
+package com.golike.customviews.manager;
 
 /**
- * Created by admin on 2017/8/10.
+ * Created by admin on 2017/8/24.
  */
 
 public class AudioStateMessage {

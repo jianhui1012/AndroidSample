@@ -1,6 +1,7 @@
 package com.golike.myapplication.ui.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,18 +20,24 @@ import android.widget.FrameLayout;
 import com.golike.customviews.EditExtension;
 import com.golike.customviews.EditExtensionManager;
 import com.golike.customviews.IExtensionClickListener;
+import com.golike.customviews.RongContext;
+import com.golike.customviews.manager.AudioPlayManager;
+import com.golike.customviews.manager.AudioRecordManager;
 import com.golike.customviews.model.Conversation;
 import com.golike.customviews.model.Conversation.ConversationType;
+import com.golike.customviews.model.ImageMessage;
 import com.golike.customviews.model.Message;
+import com.golike.customviews.model.Message.SentStatus;
 import com.golike.customviews.model.TextMessage;
 import com.golike.customviews.model.UserInfo;
+import com.golike.customviews.model.VoiceMessage;
 import com.golike.customviews.plugin.IPluginModule;
 import com.golike.customviews.utilities.PermissionCheckUtil;
 import com.golike.myapplication.R;
-import com.golike.myapplication.manager.AudioRecordManager;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -111,6 +118,16 @@ public class HomeFragment extends Fragment implements IExtensionClickListener {
         }
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 102) {
+            this.getActivity().finish();
+        } else {
+            this.mEditExtension.onActivityPluginResult(requestCode, resultCode, data);
+        }
+
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -138,8 +155,18 @@ public class HomeFragment extends Fragment implements IExtensionClickListener {
 
 
     @Override
-    public void onImageResult(List<Uri> var1, boolean var2) {
+    public void onImageResult(List<Uri> imageList, boolean isFull) {
+        Iterator i$ = imageList.iterator();
 
+        while(i$.hasNext()) {
+            Uri image = (Uri)i$.next();
+            ImageMessage content = ImageMessage.obtain(image, image, isFull);
+            content.setUserInfo(new UserInfo("1001", "golike", Uri.parse("http://img.17bangtu.com/dfile?md5=99d16d4817174715ff86e3ef1e618ad5:200x200")));
+            Message message = Message.obtain("xxx", ConversationType.PRIVATE, content);
+            //message.setSentStatus(SentStatus.SENDING);
+            message.setMessageDirection(Message.MessageDirection.SEND);
+            EventBus.getDefault().post(message);
+        }
     }
 
     @Override
@@ -156,18 +183,18 @@ public class HomeFragment extends Fragment implements IExtensionClickListener {
     public void onVoiceInputToggleTouch(View v, MotionEvent event) {
         String[] permissions = new String[]{"android.permission.RECORD_AUDIO"};
         if(!PermissionCheckUtil.checkPermissions(this.getActivity(), permissions)) {
-            if(event.getAction() == 0) {
+            if(event.getAction() == MotionEvent.ACTION_DOWN) {
                 PermissionCheckUtil.requestPermissions(this, permissions, 100);
             }
 
         } else {
-            if(event.getAction() == 0) {
-                //AudioPlayManager.getInstance().stopPlay();
+            if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                AudioPlayManager.getInstance().stopPlay();
                 AudioRecordManager.getInstance().startRecord(v.getRootView(),  ConversationType.PRIVATE, "xxx");
                 this.mLastTouchY = event.getY();
                 this.mUpDirection = false;
                 ((Button)v).setText(R.string.rc_audio_input_hover);
-            } else if(event.getAction() == 2) {
+            } else if(event.getAction() == MotionEvent.ACTION_MOVE) {
                 if(this.mLastTouchY - event.getY() > this.mOffsetLimit && !this.mUpDirection) {
                     AudioRecordManager.getInstance().willCancelRecord();
                     this.mUpDirection = true;
@@ -177,15 +204,10 @@ public class HomeFragment extends Fragment implements IExtensionClickListener {
                     this.mUpDirection = false;
                     ((Button)v).setText(R.string.rc_audio_input_hover);
                 }
-            } else if(event.getAction() == 1 || event.getAction() == 3) {
+            } else if(event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                 AudioRecordManager.getInstance().stopRecord();
                 ((Button)v).setText(R.string.rc_audio_input);
             }
-
-//            if(this.mConversationType.equals(ConversationType.PRIVATE)) {
-//                RongIMClient.getInstance().sendTypingStatus(this.mConversationType, this.mTargetId, "RC:VcMsg");
-//            }
-
         }
     }
 

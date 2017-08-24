@@ -1,4 +1,4 @@
-package com.golike.myapplication.manager;
+package com.golike.customviews.manager;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -20,9 +20,13 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.golike.customviews.R;
+import com.golike.customviews.RongContext;
 import com.golike.customviews.model.Conversation.ConversationType;
-import com.golike.myapplication.R;
-import com.golike.myapplication.SampleApplication;
+import com.golike.customviews.model.UserInfo;
+import com.golike.customviews.model.VoiceMessage;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
@@ -69,7 +73,7 @@ public class AudioRecordManager implements Handler.Callback {
         Log.d("AudioRecordManager", "AudioRecordManager");
         if(Build.VERSION.SDK_INT < 21) {
             try {
-                TelephonyManager e = (TelephonyManager) SampleApplication.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
+                TelephonyManager e = (TelephonyManager) RongContext.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
                 e.listen(new PhoneStateListener() {
                     public void onCallStateChanged(int state, String incomingNumber) {
                         switch(state) {
@@ -327,17 +331,12 @@ public class AudioRecordManager implements Handler.Callback {
             }
 
             int duration = (int)(SystemClock.elapsedRealtime() - this.smStartRecTime) / 1000;
-//            VoiceMessage voiceMessage = VoiceMessage.obtain(this.mAudioPath, duration);
-//            RongIM.getInstance().sendMessage(io.rong.imlib.model.Message.obtain(this.mTargetId, this.mConversationType, voiceMessage), (String)null, (String)null, new ISendMessageCallback() {
-//                public void onAttached(io.rong.imlib.model.Message message) {
-//                }
-//
-//                public void onSuccess(io.rong.imlib.model.Message message) {
-//                }
-//
-//                public void onError(io.rong.imlib.model.Message message, ErrorCode errorCode) {
-//                }
-//            });
+            VoiceMessage voiceMessage = VoiceMessage.obtain(this.mAudioPath, duration);
+            voiceMessage.setUserInfo(new UserInfo("1001", "golike", Uri.parse("http://img.17bangtu.com/dfile?md5=99d16d4817174715ff86e3ef1e618ad5:200x200")));
+            com.golike.customviews.model.Message message = com.golike.customviews.model.Message.obtain("xxx", ConversationType.PRIVATE, voiceMessage);
+            //message.setSentStatus(SentStatus.SENDING);
+            message.setMessageDirection(com.golike.customviews.model.Message.MessageDirection.SEND);
+            EventBus.getDefault().post(message);
         }
 
     }

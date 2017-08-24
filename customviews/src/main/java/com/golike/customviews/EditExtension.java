@@ -34,6 +34,7 @@ import com.golike.customviews.model.Conversation.ConversationType;
 import com.golike.customviews.model.CustomServiceMode;
 import com.golike.customviews.plugin.IPluginClickListener;
 import com.golike.customviews.plugin.IPluginModule;
+import com.golike.customviews.plugin.ImagePlugin;
 import com.golike.customviews.plugin.PluginAdapter;
 import com.golike.customviews.InputBar.Style;
 import com.golike.customviews.utilities.ExtensionHistoryUtil;
@@ -433,11 +434,12 @@ public class EditExtension  extends LinearLayout {
         IPluginModule pluginModule = this.mPluginAdapter.getPluginModule(position);
         if(pluginModule != null) {
             if(this.mExtensionClickListener != null && resultCode == -1) {
-//                if(pluginModule instanceof ImagePlugin) {
-//                    boolean lat1 = data.getBooleanExtra("sendOrigin", false);
-//                    ArrayList list = data.getParcelableArrayListExtra("android.intent.extra.RETURN_RESULT");
-//                    this.mExtensionClickListener.onImageResult(list, lat1);
-//                } else if(pluginModule instanceof DefaultLocationPlugin || pluginModule instanceof CombineLocationPlugin) {
+                if(pluginModule instanceof ImagePlugin) {
+                    boolean lat1 = data.getBooleanExtra("sendOrigin", false);
+                    ArrayList list = data.getParcelableArrayListExtra("android.intent.extra.RETURN_RESULT");
+                    this.mExtensionClickListener.onImageResult(list, lat1);
+              }
+//                else  if(pluginModule instanceof DefaultLocationPlugin || pluginModule instanceof CombineLocationPlugin) {
 //                    double lat = data.getDoubleExtra("lat", 0.0D);
 //                    double lng = data.getDoubleExtra("lng", 0.0D);
 //                    String poi = data.getStringExtra("poi");

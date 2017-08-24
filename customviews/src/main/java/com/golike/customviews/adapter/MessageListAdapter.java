@@ -76,7 +76,7 @@ public class MessageListAdapter extends BaseAdapter<UIMessage> {
             if(holder == null) {
                 Log.e("MessageListAdapter", "view holder is null !");
             } else {
-                Object provider;
+                final Object provider;
                 ProviderTag tag;
                 if(RongContext.getInstance() == null || data == null || data.getContent() == null) {
                         Log.e("MessageListAdapter", "Message is null !");
@@ -90,6 +90,23 @@ public class MessageListAdapter extends BaseAdapter<UIMessage> {
                 }
                 final View view = holder.contentView.inflate((IContainerItemProvider)provider);
                 ((IContainerItemProvider)provider).bindView(view, position, data);
+                if(view != null) {
+                    view.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            if(provider != null) {
+                                ((IContainerItemProvider.MessageProvider)provider).onItemClick(v, position, data.getContent(), data);
+                            }
+                        }
+                    });
+                    view.setOnLongClickListener(new View.OnLongClickListener() {
+                        public boolean onLongClick(View v) {
+                            if(provider != null) {
+                                ((IContainerItemProvider.MessageProvider)provider).onItemLongClick(v, position, data.getContent(), data);
+                            }
+                            return true;
+                        }
+                    });
+                }
                 if(tag == null) {
                     Log.e("MessageListAdapter", "Can not find ProviderTag for " + data.getObjectName());
                 } else {

@@ -6,7 +6,9 @@ import android.util.Log;
 import com.golike.customviews.model.MessageContent;
 import com.golike.customviews.plugin.image.AlbumBitmapCacheHelper;
 import com.golike.customviews.widget.provider.IContainerItemProvider.*;
+import com.golike.customviews.widget.provider.ImageMessageItemProvider;
 import com.golike.customviews.widget.provider.TextMessageItemProvider;
+import com.golike.customviews.widget.provider.VoiceMessageItemProvider;
 
 /**
  * Created by admin on 2017/8/9.
@@ -20,9 +22,9 @@ public class ChatViewManger {
         mContext = context;
         RongContext.init(context);
         registerMessageTemplate(new TextMessageItemProvider());
-//        registerMessageTemplate(new ImageMessageItemProvider());
+        registerMessageTemplate(new ImageMessageItemProvider());
+        registerMessageTemplate(new VoiceMessageItemProvider(context));
 //        registerMessageTemplate(new LocationMessageItemProvider());
-//        registerMessageTemplate(new VoiceMessageItemProvider(context));
 //        registerMessageTemplate(new DiscussionNotificationMessageItemProvider());
 //        registerMessageTemplate(new InfoNotificationMsgItemProvider());
 //        registerMessageTemplate(new RichContentMessageItemProvider());
