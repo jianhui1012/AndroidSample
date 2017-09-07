@@ -26,8 +26,9 @@ dependencies {
     // Dagger dependencies
     apt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     compile "com.google.dagger:dagger:$rootProject.daggerVersion"
-    provided 'org.glassfish:javax.annotation:10.0-b28'
     // Dependencies for local unit tests
     testCompile "junit:junit:$rootProject.ext.junitVersion"
 
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    provided 'org.glassfish:javax.annotation:10.0-b28'
 }
