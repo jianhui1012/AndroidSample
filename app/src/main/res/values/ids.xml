@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="main_content" type="id"/>
+    <item name="bottom_bar" type="id"/>
+
+    <item name="simplecomponents" type="id"/>
+    <item name="framework" type="id"/>
+    <item name="lab" type="id"/>
+</resources>

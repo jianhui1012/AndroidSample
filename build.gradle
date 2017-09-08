@@ -6,10 +6,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0'
-
-
-        // Better IDE support for annotations (so Android Studio interacts better with Dagger)
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -31,7 +27,7 @@ ext{
     minSdkVersion=10
     targetSdkVersion=23
     compileSdkVersion=23
-    buildToolsVersion='23.0.2'
+    buildToolsVersion='25.0.0'
 
     //app dependencies
     supportLibraryVersion='23.2.0'
@@ -43,6 +39,6 @@ ext{
     runnerVersion='0.5'
     rulesVersion='0.5'
     espressoVersion='0.5'
-    daggerVersion='2.7'
+    daggerVersion='2.9'
     dexmakerVersion = '1.2'
 }
