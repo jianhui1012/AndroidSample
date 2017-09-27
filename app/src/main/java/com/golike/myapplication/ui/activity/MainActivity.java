@@ -14,6 +14,7 @@ import com.golike.myapplication.SampleApplication;
 import com.golike.myapplication.components.DaggerMainComponent;
 import com.golike.myapplication.modules.MinePresenterModule;
 import com.golike.myapplication.presenter.MinePresenter;
+import com.golike.myapplication.ui.fragment.DynamicFragment;
 import com.golike.myapplication.ui.fragment.HomeFragment;
 import com.golike.myapplication.ui.fragment.MineFragment;
 
@@ -39,9 +40,11 @@ public class MainActivity extends FragmentActivity {
 
     private MineFragment mineFragment;
     private HomeFragment homeFragment;
+    private DynamicFragment dynamicFragment;
 
     private final String MINE = "Mine";
     private final String HOME = "Home";
+    private final String DYNAMIC="Dynamic";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,7 @@ public class MainActivity extends FragmentActivity {
     private void initFragments() {
         mineFragment = new MineFragment();
         homeFragment = new HomeFragment();
+        dynamicFragment=new DynamicFragment();
         DaggerMainComponent.builder().minePresenterModule(new MinePresenterModule(mineFragment)).appComponent(SampleApplication.getInstance().getAppComponent()).build().inject(this);
     }
 
@@ -75,6 +79,8 @@ public class MainActivity extends FragmentActivity {
             return mineFragment;
         } else if (HOME.equals(tag)) {
             return homeFragment;
+        }else if(DYNAMIC.equals(tag)){
+            return  dynamicFragment;
         }
 
         return null;
@@ -90,6 +96,7 @@ public class MainActivity extends FragmentActivity {
                 showFragments(MINE, false);
                 break;
             case R.id.lab:
+                showFragments(DYNAMIC,false);
                 break;
         }
     }

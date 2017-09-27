@@ -34,7 +34,7 @@ public class PaintBeSaiErView extends View {
         mCurrentPath = new Path();
         controlPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         controlPaint.setStyle(Paint.Style.STROKE);
-        controlPaint.setStrokeWidth(5);
+        controlPaint.setStrokeWidth(8);
         controlPaint.setColor(Color.RED);
 
     }
@@ -62,7 +62,7 @@ public class PaintBeSaiErView extends View {
                 float curY= event.getY();
                 float preX= startPointX;
                 float preY= startPointY;
-                if(Math.abs(preX-curX)>=offset||Math.abs(preX-curY)>=offset) {
+                if(Math.abs(curX-preX)>=offset||Math.abs(curY-preY)>=offset) {
                     mCurrentPath.quadTo((curX + preX) / 2, (curY + preY) / 2, curX, curY);
                     //mCurrentPath.lineTo(curX, curY);
                     startPointX = curX;
