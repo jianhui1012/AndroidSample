@@ -27,10 +27,16 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.bumptech.glide.Glide;
 import com.golike.customviews.R;
+import com.golike.customviews.photoview.PhotoView;
+import com.golike.customviews.photoview.PhotoViewAttacher;
 import com.golike.customviews.plugin.image.AlbumBitmapCacheHelper.ILoadImageCallback;
 import com.golike.customviews.plugin.image.PictureSelectorActivity.PicItemHolder;
 import com.golike.customviews.plugin.image.PictureSelectorActivity.PicItem;
+
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 
 /**
  * Created by admin on 2017/8/10.
@@ -57,7 +63,7 @@ public class PicturePreviewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(1);
-        this.setContentView(R.layout.rc_picprev_activity);
+        this.setContentView(R.layout.ee_picprev_activity);
         if(savedInstanceState != null) {
             this.mItemList = savedInstanceState.getParcelableArrayList("ItemList");
         }
@@ -125,7 +131,7 @@ public class PicturePreviewActivity extends Activity {
                 PicturePreviewActivity.this.mUseOrigin.setChecked(!PicturePreviewActivity.this.mUseOrigin.getChecked());
                 if(PicturePreviewActivity.this.mUseOrigin.getChecked() && PicturePreviewActivity.this.getTotalSelectedNum() == 0) {
                     PicturePreviewActivity.this.mSelectBox.setChecked(!PicturePreviewActivity.this.mSelectBox.getChecked());
-                    ((PicItem)PicturePreviewActivity.this.mItemList.get(PicturePreviewActivity.this.mCurrentIndex)).selected = PicturePreviewActivity.this.mSelectBox.getChecked();
+                    (PicturePreviewActivity.this.mItemList.get(PicturePreviewActivity.this.mCurrentIndex)).selected = PicturePreviewActivity.this.mSelectBox.getChecked();
                     PicturePreviewActivity.this.updateToolbar();
                 }
 
@@ -139,7 +145,7 @@ public class PicturePreviewActivity extends Activity {
                     Toast.makeText(PicturePreviewActivity.this, R.string.rc_picsel_selected_max, Toast.LENGTH_SHORT).show();
                 } else {
                     PicturePreviewActivity.this.mSelectBox.setChecked(!PicturePreviewActivity.this.mSelectBox.getChecked());
-                    ((PicItem)PicturePreviewActivity.this.mItemList.get(PicturePreviewActivity.this.mCurrentIndex)).selected = PicturePreviewActivity.this.mSelectBox.getChecked();
+                    (PicturePreviewActivity.this.mItemList.get(PicturePreviewActivity.this.mCurrentIndex)).selected = PicturePreviewActivity.this.mSelectBox.getChecked();
                     PicturePreviewActivity.this.updateToolbar();
                 }
             }
@@ -153,7 +159,7 @@ public class PicturePreviewActivity extends Activity {
             public void onPageSelected(int position) {
                 PicturePreviewActivity.this.mCurrentIndex = position;
                 PicturePreviewActivity.this.mIndexTotal.setText(String.format("%d/%d", new Object[]{Integer.valueOf(position + 1), Integer.valueOf(PicturePreviewActivity.this.mItemList.size())}));
-                PicturePreviewActivity.this.mSelectBox.setChecked(((PicItem)PicturePreviewActivity.this.mItemList.get(position)).selected);
+                PicturePreviewActivity.this.mSelectBox.setChecked((PicturePreviewActivity.this.mItemList.get(position)).selected);
             }
 
             public void onPageScrollStateChanged(int state) {
@@ -192,7 +198,7 @@ public class PicturePreviewActivity extends Activity {
         int sum = 0;
 
         for(int i = 0; i < this.mItemList.size(); ++i) {
-            if(((PicItem)this.mItemList.get(i)).selected) {
+            if((this.mItemList.get(i)).selected) {
                 ++sum;
             }
         }
@@ -204,8 +210,8 @@ public class PicturePreviewActivity extends Activity {
         float size = 0.0F;
 
         for(int totalSize = 0; totalSize < this.mItemList.size(); ++totalSize) {
-            if(((PicItem)this.mItemList.get(totalSize)).selected) {
-                File file = new File(((PicItem)this.mItemList.get(totalSize)).uri);
+            if((this.mItemList.get(totalSize)).selected) {
+                File file = new File((this.mItemList.get(totalSize)).uri);
                 size += (float)(file.length() / 1024L);
             }
         }
@@ -311,56 +317,53 @@ public class PicturePreviewActivity extends Activity {
         }
 
         public Object instantiateItem(ViewGroup container, int position) {
-//            final PhotoView photoView = new PhotoView(container.getContext());
-//            photoView.setOnViewTapListener(new OnViewTapListener() {
-//                public void onViewTap(View view, float x, float y) {
-//                    PicturePreviewActivity.this.mFullScreen = !PicturePreviewActivity.this.mFullScreen;
-//                    View decorView;
-//                    byte uiOptions;
-//                    if(PicturePreviewActivity.this.mFullScreen) {
-//                        if(Build.VERSION.SDK_INT < 16) {
-//                            PicturePreviewActivity.this.getWindow().setFlags(1024, 1024);
-//                        } else {
-//                            decorView = PicturePreviewActivity.this.getWindow().getDecorView();
-//                            uiOptions = 4;
-//                            decorView.setSystemUiVisibility(uiOptions);
-//                        }
-//
-//                        PicturePreviewActivity.this.mToolbarTop.setVisibility(4);
-//                        PicturePreviewActivity.this.mToolbarBottom.setVisibility(4);
-//                    } else {
-//                        if(Build.VERSION.SDK_INT < 16) {
-//                            PicturePreviewActivity.this.getWindow().setFlags(1024, 1024);
-//                        } else {
-//                            decorView = PicturePreviewActivity.this.getWindow().getDecorView();
-//                            uiOptions = 0;
-//                            decorView.setSystemUiVisibility(uiOptions);
-//                        }
-//
-//                        PicturePreviewActivity.this.mToolbarTop.setVisibility(0);
-//                        PicturePreviewActivity.this.mToolbarBottom.setVisibility(0);
-//                    }
-//
-//                }
-//            });
-//            container.addView(photoView, -1, -1);
-//            String path = ((PicItem)PicturePreviewActivity.this.mItemList.get(position)).uri;
-//            AlbumBitmapCacheHelper.getInstance().removePathFromShowlist(path);
-//            AlbumBitmapCacheHelper.getInstance().addPathToShowlist(path);
-//            Bitmap bitmap = AlbumBitmapCacheHelper.getInstance().getBitmap(path, 0, 0, new ILoadImageCallback() {
-//                public void onLoadImageCallBack(Bitmap bitmap, String p, Object... objects) {
-//                    if(bitmap != null) {
-//                        photoView.setImageBitmap(bitmap);
-//                    }
-//                }
-//            }, new Object[]{Integer.valueOf(position)});
-//            if(bitmap != null) {
-//                photoView.setImageBitmap(bitmap);
-//            } else {
-//                photoView.setImageResource(R.drawable.rc_grid_image_default);
-//            }
-//
-          return null;
+            final PhotoView photoView = new PhotoView(container.getContext());
+            photoView.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
+                public void onViewTap(View view, float x, float y) {
+                    PicturePreviewActivity.this.mFullScreen = !PicturePreviewActivity.this.mFullScreen;
+                    View decorView;
+                    byte uiOptions;
+                    if(PicturePreviewActivity.this.mFullScreen) {
+                        if(Build.VERSION.SDK_INT < 16) {
+                            PicturePreviewActivity.this.getWindow().setFlags(1024, 1024);
+                        } else {
+                            decorView = PicturePreviewActivity.this.getWindow().getDecorView();
+                            uiOptions = 4;
+                            decorView.setSystemUiVisibility(uiOptions);
+                        }
+                        PicturePreviewActivity.this.mToolbarTop.setVisibility(INVISIBLE);
+                        PicturePreviewActivity.this.mToolbarBottom.setVisibility(INVISIBLE);
+                    } else {
+                        if(Build.VERSION.SDK_INT < 16) {
+                            PicturePreviewActivity.this.getWindow().setFlags(1024, 1024);
+                        } else {
+                            decorView = PicturePreviewActivity.this.getWindow().getDecorView();
+                            uiOptions = 0;
+                            decorView.setSystemUiVisibility(uiOptions);
+                        }
+                        PicturePreviewActivity.this.mToolbarTop.setVisibility(VISIBLE);
+                        PicturePreviewActivity.this.mToolbarBottom.setVisibility(VISIBLE);
+                    }
+                }
+            });
+            container.addView(photoView, -1, -1);
+            String path = (PicturePreviewActivity.this.mItemList.get(position)).uri;
+            AlbumBitmapCacheHelper.getInstance().removePathFromShowlist(path);
+            AlbumBitmapCacheHelper.getInstance().addPathToShowlist(path);
+            Bitmap bitmap = AlbumBitmapCacheHelper.getInstance().getBitmap(path, 0, 0, new ILoadImageCallback() {
+                public void onLoadImageCallBack(Bitmap bitmap, String p, Object... objects) {
+                    if(bitmap != null) {
+                        photoView.setImageBitmap(bitmap);
+                    }
+                }
+            }, new Object[]{Integer.valueOf(position)});
+            if(bitmap != null) {
+                photoView.setImageBitmap(bitmap);
+            } else {
+                photoView.setImageResource(R.drawable.rc_grid_image_default);
+            }
+
+          return photoView;
         }
 
         public void destroyItem(ViewGroup container, int position, Object object) {

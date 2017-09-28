@@ -4,33 +4,32 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.location.LocationProvider;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 
 import com.golike.customviews.common.WeakValueHashMap;
 import com.golike.customviews.model.Conversation.*;
+import com.golike.customviews.model.Message;
 import com.golike.customviews.model.MessageContent;
 import com.golike.customviews.model.ProviderTag;
 import com.golike.customviews.model.UserInfo;
 import com.golike.customviews.widget.provider.IContainerItemProvider.*;
 import org.greenrobot.eventbus.EventBus;
-import java.io.File;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * Created by admin on 2017/8/16.
  */
-public class RongContext extends ContextWrapper {
+public class ChatContext extends ContextWrapper {
     private static final String TAG = "RongContext";
     private static final int NOTIFICATION_CACHE_MAX_COUNT = 64;
-    private static RongContext sContext;
+    private static ChatContext sContext;
     private EventBus mBus = EventBus.getDefault();
     private ExecutorService executorService;
 
@@ -44,19 +43,20 @@ public class RongContext extends ContextWrapper {
     private boolean isUserInfoAttached;
     private boolean isShowUnreadMessageState;
     private boolean isShowNewMessageState;
+    private ConversationBehaviorListener mConversationBehaviorListener;
 
     public static void init(Context context) {
         if(sContext == null) {
-            sContext = new RongContext(context);
+            sContext = new ChatContext(context);
         }
 
     }
 
-    public static RongContext getInstance() {
+    public static ChatContext getInstance() {
         return sContext;
     }
 
-    protected RongContext(Context base) {
+    protected ChatContext(Context base) {
         super(base);
         this.executorService = Executors.newSingleThreadExecutor();
     }
@@ -97,6 +97,15 @@ public class RongContext extends ContextWrapper {
         return  this.mProviderMap.get(type);
     }
 
+    public ConversationBehaviorListener getConversationBehaviorListener() {
+        return this.mConversationBehaviorListener;
+    }
+
+    public void setConversationBehaviorListener(ConversationBehaviorListener conversationBehaviorListener) {
+        if(ChatContext.getInstance() != null) {
+            this.mConversationBehaviorListener = conversationBehaviorListener;
+        }
+    }
 
     public void executorBackground(Runnable runnable) {
         if(runnable != null) {
@@ -142,6 +151,19 @@ public class RongContext extends ContextWrapper {
 
     public boolean getNewMessageState() {
         return this.isShowNewMessageState;
+    }
+
+
+    public interface ConversationBehaviorListener {
+        boolean onUserPortraitClick(Context context, ConversationType conversationType, UserInfo userInfo);
+
+        boolean onUserPortraitLongClick(Context context, ConversationType conversationType, UserInfo userInfo);;
+
+        boolean onMessageClick(Context context, View view, Message message);
+
+        boolean onMessageLinkClick(Context context, String st);
+
+        boolean onMessageLongClick(Context context, View view, Message message);
     }
 
 }

@@ -2,7 +2,6 @@ package com.golike.customviews.widget.provider;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -16,17 +15,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.golike.customviews.R;
-import com.golike.customviews.RongContext;
+import com.golike.customviews.ChatContext;
 import com.golike.customviews.manager.AudioPlayManager;
 import com.golike.customviews.manager.AudioRecordManager;
 import com.golike.customviews.manager.IAudioPlayListener;
+import com.golike.customviews.model.Message;
 import com.golike.customviews.model.ProviderTag;
 import com.golike.customviews.model.Message.MessageDirection;
 import com.golike.customviews.model.UIMessage;
 import com.golike.customviews.model.VoiceMessage;
 import com.golike.customviews.widget.provider.IContainerItemProvider.MessageProvider;
-
-import org.greenrobot.eventbus.EventBus;
 
 
 /**
@@ -44,11 +42,11 @@ public class VoiceMessageItemProvider extends MessageProvider<VoiceMessage> {
     }
 
     public View newView(Context context, ViewGroup group) {
-        View view = LayoutInflater.from(context).inflate(R.layout.rc_item_voice_message, (ViewGroup)null);
+        View view = LayoutInflater.from(context).inflate(R.layout.ee_item_voice_message, (ViewGroup)null);
         VoiceMessageItemProvider.ViewHolder holder = new VoiceMessageItemProvider.ViewHolder();
-        holder.left = (TextView)view.findViewById(R.id.rc_left);
-        holder.right = (TextView)view.findViewById(R.id.rc_right);
-        holder.img = (ImageView)view.findViewById(R.id.rc_img);
+        holder.left = (TextView)view.findViewById(R.id.ee_left);
+        holder.right = (TextView)view.findViewById(R.id.ee_right);
+        holder.img = (ImageView)view.findViewById(R.id.ee_img);
         holder.unread = (ImageView)view.findViewById(R.id.rc_voice_unread);
         view.setTag(holder);
         return view;
@@ -150,7 +148,7 @@ public class VoiceMessageItemProvider extends MessageProvider<VoiceMessage> {
     }
 
     public Spannable getContentSummary(VoiceMessage data) {
-        return new SpannableString(RongContext.getInstance().getString(R.string.rc_message_content_voice));
+        return new SpannableString(ChatContext.getInstance().getString(R.string.rc_message_content_voice));
     }
 
     @TargetApi(8)
@@ -166,10 +164,10 @@ public class VoiceMessageItemProvider extends MessageProvider<VoiceMessage> {
             AudioManager am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
             int result;
             if(bMute) {
-                result = am.requestAudioFocus((AudioManager.OnAudioFocusChangeListener)null, 3, 2);
+                result = am.requestAudioFocus(null, 3, 2);
                 bool = result == 1;
             } else {
-                result = am.abandonAudioFocus((AudioManager.OnAudioFocusChangeListener)null);
+                result = am.abandonAudioFocus(null);
                 bool = result == 1;
             }
 
@@ -194,10 +192,11 @@ public class VoiceMessageItemProvider extends MessageProvider<VoiceMessage> {
         public void onStart(Uri uri) {
             this.message.continuePlayAudio = false;
             this.message.setListening(true);
+            this.message.setReceivedStatus(new Message.ReceivedStatus(1));
             this.message.getReceivedStatus().setListened();
             //RongIMClient.getInstance().setMessageReceivedStatus(this.message.getMessageId(), this.message.getReceivedStatus(), (ResultCallback)null);
             VoiceMessageItemProvider.this.setLayout(this.context, this.holder, this.message, true);
-            EventBus.getDefault().post(this.message.getMessage());
+            //EventBus.getDefault().post(this.message.getMessage());
         }
 
         public void onStop(Uri uri) {

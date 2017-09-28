@@ -20,7 +20,7 @@ import android.widget.FrameLayout;
 import com.golike.customviews.EditExtension;
 import com.golike.customviews.EditExtensionManager;
 import com.golike.customviews.IExtensionClickListener;
-import com.golike.customviews.RongContext;
+import com.golike.customviews.ChatContext;
 import com.golike.customviews.manager.AudioPlayManager;
 import com.golike.customviews.manager.AudioRecordManager;
 import com.golike.customviews.model.Conversation;
@@ -104,10 +104,10 @@ public class HomeFragment extends Fragment implements IExtensionClickListener {
         View view=inflater.inflate(R.layout.chat_page, container, false);
         // Inflate the layout for this fragment
         //this.mChatView = (FrameLayout)view.findViewById(R.id.chat_view);
-        this.mEditExtension = (EditExtension)view.findViewById(R.id.rc_extension);
+        this.mEditExtension = (EditExtension)view.findViewById(R.id.ee_extension);
         this.mEditExtension.setConversation(Conversation.ConversationType.PRIVATE,"xxxx");
         this.mEditExtension.setExtensionClickListener(this);
-        this.mEditExtension.setFragment(this);
+        this.mEditExtension.setActivity(getActivity());
         return view;
     }
 

@@ -1,20 +1,15 @@
 package com.golike.customviews.widget.provider;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.text.ClipboardManager;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.golike.customviews.R;
-import com.golike.customviews.RongContext;
 import com.golike.customviews.emoticon.AndroidEmoji;
 import com.golike.customviews.model.ProviderTag;
 import com.golike.customviews.model.TextMessage;
@@ -38,7 +33,7 @@ public class TextMessageItemProvider extends MessageProvider<TextMessage> {
     }
 
     public View newView(Context context, ViewGroup group) {
-        View view = LayoutInflater.from(context).inflate(R.layout.rc_item_text_message, (ViewGroup)null);
+        View view = LayoutInflater.from(context).inflate(R.layout.ee_item_text_message, (ViewGroup)null);
         TextMessageItemProvider.ViewHolder holder = new TextMessageItemProvider.ViewHolder();
         holder.message = (AutoLinkTextView)view.findViewById(android.R.id.text1);
         view.setTag(holder);

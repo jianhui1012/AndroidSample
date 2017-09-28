@@ -7,7 +7,7 @@ import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
 import com.golike.customviews.ChatViewManger;
-import com.golike.customviews.RongContext;
+import com.golike.customviews.ChatContext;
 import com.golike.myapplication.components.AppComponent;
 import com.golike.myapplication.components.DaggerAppComponent;
 import com.golike.myapplication.modules.AppModule;

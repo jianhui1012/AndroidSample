@@ -1,1 +1,3 @@
-include ':app', ':customviews'
+include ':app'
+include ':customviews'
+project(':customviews').projectDir = new File(settingsDir, 'customviews')

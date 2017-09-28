@@ -1,12 +1,11 @@
 package com.golike.customviews;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -69,7 +68,8 @@ public class EditExtension  extends LinearLayout {
     private ImageView mPluginToggle;
     private ImageView mVoiceToggle;
     private OnClickListener mVoiceToggleClickListener;
-    private Fragment mFragment;
+    //private Fragment mFragment;
+    private Activity mActivity;
     private IExtensionClickListener mExtensionClickListener;
     private ConversationType mConversationType;
     private String mTargetId;
@@ -101,6 +101,28 @@ public class EditExtension  extends LinearLayout {
 
     }
 
+
+    private final Runnable measureAndLayout = new Runnable() {
+        @Override
+        public void run() {
+            measure(
+                    MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+            layout(getLeft(), getTop(), getRight(), getBottom());
+        }
+    };
+
+    @Override
+    public void requestLayout() {
+        super.requestLayout();
+
+        // The spinner relies on a measure + layout pass happening after it calls requestLayout().
+        // Without this, the widget never actually changes the selection and doesn't call the
+        // appropriate listeners. Since we override onLayout in our ViewGroups, a layout pass never
+        // happens after a call to requestLayout, so we simulate one here.
+        post(measureAndLayout);
+    }
+
     public void onDestroy() {
         //RLog.d("EditExtension", "onDestroy");
         Iterator i$ = this.mExtensionModuleList.iterator();
@@ -124,20 +146,20 @@ public class EditExtension  extends LinearLayout {
     }
 
     public void setInputBarStyle(InputBar.Style style) {
-        switch(Style.values()[style.ordinal()].ordinal()) {
-            case 1:
+        switch(style) {
+            case STYLE_SWITCH_CONTAINER_EXTENSION:
                 this.setSCE();
                 break;
-            case 2:
+            case STYLE_CONTAINER:
                 this.setC();
                 break;
-            case 3:
+            case STYLE_CONTAINER_EXTENSION:
                 this.setCE();
                 break;
-            case 4:
+            case STYLE_EXTENSION_CONTAINER:
                 this.setEC();
                 break;
-            case 5:
+            case STYLE_SWITCH_CONTAINER:
                 this.setSC();
         }
 
@@ -215,7 +237,7 @@ public class EditExtension  extends LinearLayout {
     private void setMenuVisibility(int visibility, List<InputMenu> inputMenuList) {
         if(this.mMenuContainer == null) {
             LayoutInflater inflater = LayoutInflater.from(this.getContext());
-            this.mMenuContainer = (ViewGroup)inflater.inflate(R.layout.rc_ext_menu_container, (ViewGroup)null);
+            this.mMenuContainer = (ViewGroup)inflater.inflate(R.layout.ee_ext_menu_container, (ViewGroup)null);
             this.mMenuContainer.findViewById(R.id.rc_switch_to_keyboard).setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
                     EditExtension.this.setExtensionBarVisibility(VISIBLE);
@@ -226,7 +248,7 @@ public class EditExtension  extends LinearLayout {
             for(int i = 0; i < inputMenuList.size(); ++i) {
                 final int j=i;
                 final InputMenu menu = (InputMenu)inputMenuList.get(i);
-                LinearLayout rootMenu = (LinearLayout)inflater.inflate(R.layout.rc_ext_root_menu_item, (ViewGroup)null);
+                LinearLayout rootMenu = (LinearLayout)inflater.inflate(R.layout.ee_ext_root_menu_item, (ViewGroup)null);
                 LayoutParams lp = new LayoutParams(-1, -1, 1.0F);
                 rootMenu.setLayoutParams(lp);
                 TextView title = (TextView)rootMenu.findViewById(R.id.rc_menu_title);
@@ -273,12 +295,12 @@ public class EditExtension  extends LinearLayout {
     }
 
     public void setExtensionBarMode(CustomServiceMode mode) {
-        switch(CustomServiceMode.values()[mode.ordinal()].ordinal()) {
-            case 1:
+        switch(mode) {
+            case CUSTOM_SERVICE_MODE_NO_SERVICE:
                 this.setC();
                 break;
-            case 2:
-            case 3:
+            case CUSTOM_SERVICE_MODE_ROBOT:
+            case CUSTOM_SERVICE_MODE_HUMAN:
                 if(this.mStyle != null) {
                     this.setInputBarStyle(this.mStyle);
                 }
@@ -286,10 +308,10 @@ public class EditExtension  extends LinearLayout {
                 this.mVoiceToggle.setImageResource(R.drawable.rc_voice_toggle_selector);
                 this.mVoiceToggle.setOnClickListener(this.mVoiceToggleClickListener);
                 break;
-            case 4:
+            case CUSTOM_SERVICE_MODE_ROBOT_FIRST:
                 this.setC();
                 break;
-            case 5:
+            case CUSTOM_SERVICE_MODE_HUMAN_FIRST:
                 this.mVoiceToggle.setImageResource(R.drawable.rc_cs_admin_selector);
                 this.mVoiceToggle.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
@@ -408,13 +430,17 @@ public class EditExtension  extends LinearLayout {
 
     }
 
-    public void setFragment(Fragment fragment) {
-        this.mFragment = fragment;
+    public void setActivity(Activity activity) {
+        this.mActivity = activity;
     }
 
-    public Fragment getFragment() {
-        return this.mFragment;
-    }
+//    public void setFragment(Fragment fragment) {
+//        this.mFragment = fragment;
+//    }
+
+//    public Fragment getFragment() {
+//        return this.mFragment;
+//    }
 
     public ConversationType getConversationType() {
         return this.mConversationType;
@@ -458,7 +484,7 @@ public class EditExtension  extends LinearLayout {
             throw new IllegalArgumentException("requestCode does not over 255.");
         } else {
             int position = this.mPluginAdapter.getPluginPosition(pluginModule);
-            this.mFragment.startActivityForResult(intent, (position + 1 << 8) + (requestCode & 255));
+            this.mActivity.startActivityForResult(intent, (position + 1 << 8) + (requestCode & 255));
         }
     }
 
@@ -471,7 +497,7 @@ public class EditExtension  extends LinearLayout {
                     EditExtension.this.mExtensionClickListener.onPluginClicked(pluginModule, position);
                 }
 
-                pluginModule.onClick(EditExtension.this.mFragment, EditExtension.this);
+                pluginModule.onClick(EditExtension.this.mActivity, EditExtension.this);
             }
         });
         this.mEmotionTabAdapter = new EmoticonTabAdapter();
@@ -491,15 +517,15 @@ public class EditExtension  extends LinearLayout {
     private void initView() {
         this.setOrientation(VERTICAL);
         this.setBackgroundColor(this.getContext().getResources().getColor(R.color.rc_extension_normal));
-        this.mExtensionBar = (ViewGroup)LayoutInflater.from(this.getContext()).inflate(R.layout.rc_ext_extension_bar, (ViewGroup)null);
+        this.mExtensionBar = (ViewGroup)LayoutInflater.from(this.getContext()).inflate(R.layout.ee_ext_extension_bar, (ViewGroup)null);
         this.mMainBar = (LinearLayout)this.mExtensionBar.findViewById(R.id.ext_main_bar);
         this.mSwitchLayout = (ViewGroup)this.mExtensionBar.findViewById(R.id.rc_switch_layout);
         this.mContainerLayout = (ViewGroup)this.mExtensionBar.findViewById(R.id.rc_container_layout);
         this.mPluginLayout = (ViewGroup)this.mExtensionBar.findViewById(R.id.rc_plugin_layout);
-        this.mEditTextLayout = LayoutInflater.from(this.getContext()).inflate(R.layout.rc_ext_input_edit_text, (ViewGroup)null);
+        this.mEditTextLayout = LayoutInflater.from(this.getContext()).inflate(R.layout.ee_ext_input_edit_text, (ViewGroup)null);
         this.mEditTextLayout.setVisibility(VISIBLE);
         this.mContainerLayout.addView(this.mEditTextLayout);
-        LayoutInflater.from(this.getContext()).inflate(R.layout.rc_ext_voice_input, this.mContainerLayout, true);
+        LayoutInflater.from(this.getContext()).inflate(R.layout.ee_ext_voice_input, this.mContainerLayout, true);
         this.mVoiceInputToggle = this.mContainerLayout.findViewById(R.id.rc_audio_input_toggle);
         this.mVoiceInputToggle.setVisibility(GONE);
         this.mEditText = (EditText)this.mExtensionBar.findViewById(R.id.rc_edit_text);
@@ -747,11 +773,11 @@ public class EditExtension  extends LinearLayout {
                 if(this.isKeyBoardActive()) {
                     this.getHandler().postDelayed(new Runnable() {
                         public void run() {
-                            EditExtension.this.mPluginAdapter.setVisibility(0);
+                            EditExtension.this.mPluginAdapter.setVisibility(VISIBLE);
                         }
                     }, 200L);
                 } else {
-                    this.mPluginAdapter.setVisibility(0);
+                    this.mPluginAdapter.setVisibility(VISIBLE);
                 }
 
                 this.hideInputKeyBoard();
