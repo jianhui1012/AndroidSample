@@ -1,4 +1,4 @@
-package com.golike.myapplication.customviews;
+package com.golike.myapplication.customviews.beisaier;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -30,7 +30,7 @@ public class BeSaiErView extends View {
     private Path mPath = new Path();
 
     public BeSaiErView(Context context) {
-        super(context);
+        this(context,null);
     }
 
     public BeSaiErView(Context context, @Nullable AttributeSet attrs) {
@@ -48,8 +48,9 @@ public class BeSaiErView extends View {
         dataPaint.setStyle(Paint.Style.STROKE);
         dataPaint.setTextSize(20);
 
-
     }
+
+
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {

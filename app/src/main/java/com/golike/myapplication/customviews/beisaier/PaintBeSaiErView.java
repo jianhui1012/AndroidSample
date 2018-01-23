@@ -1,4 +1,4 @@
-package com.golike.myapplication.customviews;
+package com.golike.myapplication.customviews.beisaier;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -26,7 +26,7 @@ public class PaintBeSaiErView extends View {
     private float offset = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 
     public PaintBeSaiErView(Context context) {
-        super(context);
+        this(context,null);
     }
 
     public PaintBeSaiErView(Context context, @Nullable AttributeSet attrs) {
