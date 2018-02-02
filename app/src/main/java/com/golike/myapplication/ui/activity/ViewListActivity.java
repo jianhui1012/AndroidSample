@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
  */
 public class ViewListActivity extends AppCompatActivity {
 
-    static final String[] showTitles = new String[]{"二阶贝塞尔曲线", "光滑曲线","绘制应用"};
+    static final String[] showTitles = new String[]{"二阶贝塞尔曲线", "光滑曲线","绘制基本图形","Path图形"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

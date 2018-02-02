@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import com.golike.myapplication.customviews.beisaier.BeSaiErView;
 import com.golike.myapplication.customviews.beisaier.PaintBeSaiErView;
 import com.golike.myapplication.customviews.hencoder.BasicShape;
+import com.golike.myapplication.customviews.hencoder.PathView;
 
 /**
  * @author admin
@@ -27,6 +28,9 @@ public class ViewContentActivity extends AppCompatActivity {
                 break;
             case 2:
                 ll.addView(new BasicShape(this));
+                break;
+            case 3:
+                ll.addView(new PathView(this));
                 break;
             default:
                 break;
