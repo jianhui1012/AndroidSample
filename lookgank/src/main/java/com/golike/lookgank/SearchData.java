@@ -8,11 +8,19 @@ import java.util.List;
 
 public class SearchData {
 
-     boolean error;
+    boolean error;
 
-     List<GANK> results;
+   private List<GANK> results;
 
-    private class GANK {
+    public List<GANK> getResults() {
+        return results;
+    }
+
+    public void setResults(List<GANK> results) {
+        this.results = results;
+    }
+
+     class GANK {
 
         String _id;
 
@@ -24,11 +32,35 @@ public class SearchData {
 
         String publishedAt;
 
-        String source;
+        private String source;
 
-        String type;
+        private String type;
 
-        String who;
+        private String who;
+
+        public String getSource() {
+            return source;
+        }
+
+        public void setSource(String source) {
+            this.source = source;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getWho() {
+            return who;
+        }
+
+        public void setWho(String who) {
+            this.who = who;
+        }
     }
 
 }
