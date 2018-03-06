@@ -10,7 +10,7 @@ public class SearchData {
 
     boolean error;
 
-   private List<GANK> results;
+    private List<GANK> results;
 
     public List<GANK> getResults() {
         return results;
@@ -20,7 +20,7 @@ public class SearchData {
         this.results = results;
     }
 
-     class GANK {
+    class GANK {
 
         String _id;
 
@@ -28,9 +28,11 @@ public class SearchData {
 
         String desc;
 
-        List<String> images;
+        private String url;
 
-        String publishedAt;
+        private List<String> images;
+
+        private String publishedAt;
 
         private String source;
 
@@ -60,6 +62,30 @@ public class SearchData {
 
         public void setWho(String who) {
             this.who = who;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public List<String> getImages() {
+            return images;
+        }
+
+        public void setImages(List<String> images) {
+            this.images = images;
+        }
+
+        public String getPublishedAt() {
+            return publishedAt;
+        }
+
+        public void setPublishedAt(String publishedAt) {
+            this.publishedAt = publishedAt;
         }
     }
 

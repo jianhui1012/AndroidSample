@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recyclerView)
     public RecyclerView recyclerView;
 
-    private RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+    private RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
     private RecyclerView.Adapter adapter = new NewAdapter();
 
     @Override
@@ -61,11 +62,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onNext(SearchData searchData) {
                     recyclerView.setLayoutManager(layoutManager);
-                    recyclerView.setAdapter(new NewAdapter(searchData));
+                    recyclerView.setAdapter(new NewAdapter(MainActivity.this, searchData));
                     //adapter.notifyDataSetChanged();
                 }
             };
-            HttpUtils.getInstance().getHomeData(subscriber, "Android", 10, 1);
+            HttpUtils.getInstance().getHomeData(subscriber, "福利", 10, 1);
         } else if (view.getId() == R.id.recyclerView) {
 
         }
